@@ -94,3 +94,17 @@ def toss():
 
 def clear():
     os.system('clear')  # This doesn't work
+
+
+def find_bat(text):  # function to find "bat" in the string
+    if text.find("bat") != -1 or text.find("Bat") != -1:
+        return "Yes"
+    else:
+        return "No"
+
+
+def find_ball(text):  # function to find "ball" in the string
+    if text.find("ball") != -1 or text.find("Ball") != -1:
+        return "Yes"
+    else:
+        return "No"
