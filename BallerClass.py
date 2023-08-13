@@ -34,4 +34,4 @@ class Baller(Batter):
         if self.get_runs() or self.get_no_of_balls() > 0:
             print(f"Economy: {float(self.economy())}\n{int(self.get_wickets())}/{int(self.get_runs_given())}")
         else:
-            print("Did not bat")
+            print("Did not ball yet.")

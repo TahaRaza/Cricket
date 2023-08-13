@@ -1,3 +1,5 @@
+import random
+
 
 def my_menu():
     while True:
@@ -36,6 +38,11 @@ def start_match(t1, t2):
     print(f"Match has been started between {t1} and {t2}.")
     pause()
     clear()
+
+
+def toss():
+    t = random.randint(0, 1)
+    return 0 if t < 0.5 else 1
 
 
 def clear():

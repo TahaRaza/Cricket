@@ -27,4 +27,4 @@ class Batter(Player):
         if self.get_runs() or self.get_balls_played() > 0:
             print(f"{self.get_runs()} runs on {self.get_balls_played()} balls\n")
         else:
-            print("Did not bat yet")
+            print("Did not bat yet.")
