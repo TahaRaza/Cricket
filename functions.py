@@ -1,5 +1,8 @@
 import random
 import os
+from openpyxl import load_workbook
+from BallerClass import Baller
+from BallerClass import Batter
 
 
 def menu():
@@ -69,6 +72,8 @@ def match_starter():
         start_match(team1, team2, team2)
 
 
+# not completed
+
 def start_match(t1, t2, toss_winner):
     print(f'{toss_winner} won the toss!\n'
           'Press 0     to Ball\n'
@@ -77,10 +82,23 @@ def start_match(t1, t2, toss_winner):
     match user_input:
         case '0':
             print(f'{toss_winner} decided to Ball First!')
+            if toss_winner == 'Pakistan':
+                load_ballers('PakBall')
+            else:
+                load_ballers('IndBall')  # not completed
+
         case '1':
             print(f'{toss_winner} decided to Bat First!')
+            if toss_winner == 'Pakistan':
+                load_ballers('PakBat')
+            else:
+                load_ballers('IndBat')
         case _:
             print(f'{toss_winner} decided to Batt First!')
+            if toss_winner == 'Pakistan':
+                load_ballers('PakBat')
+            else:
+                load_ballers('IndBat')
 
     print(f"Match has been started between {t1} and {t2}.")
     pause()
@@ -90,6 +108,46 @@ def start_match(t1, t2, toss_winner):
 def toss():
     t = random.randint(0, 1)
     return 0 if t < 0.5 else 1
+
+
+def load_ballers(team):
+    ballers = []
+    # Load the workbook
+    wb = load_workbook('Teams.xlsx')
+    # accessing first sheet by its name
+    ws = wb[team]
+    for r in range(2, 7):  # 2 to 6+1
+        first_name = str(ws.cell(row=r, column=1).value)
+        last_name = str(ws.cell(row=r, column=2).value)
+        age = int(ws.cell(row=r, column=3).value)
+        runs = int(ws.cell(row=r, column=4).value)
+        balls_played = int(ws.cell(row=r, column=5).value)
+        is_on_strike = bool(ws.cell(row=r, column=6).value)
+        is_batting = bool(ws.cell(row=r, column=7).value)
+        wickets = int(ws.cell(row=r, column=8).value)
+        runs_given = int(ws.cell(row=r, column=9).value)
+        is_balling = bool(ws.cell(row=r, column=10).value)
+        no_of_balls = int(ws.cell(row=r, column=11).value)
+        ballers.append(Baller(first_name, last_name, age, runs, balls_played, is_on_strike, is_batting,
+                              wickets, runs_given, is_balling, no_of_balls))
+        return ballers
+
+
+def load_batters(team):
+    batters = []
+    # Load the workbook
+    wb = load_workbook('Teams.xlsx')
+    # accessing first sheet by its name 'Bat'
+    ws = wb['Bat']
+    for r in range(2, 13):  # 2 to 12+1
+        first_name = str(ws.cell(row=r, column=1).value)
+        last_name = str(ws.cell(row=r, column=2).value)
+        age = int(ws.cell(row=r, column=3).value)
+        runs = int(ws.cell(row=r, column=4).value)
+        balls_played = int(ws.cell(row=r, column=5).value)
+        is_on_strike = bool(ws.cell(row=r, column=6).value)
+        is_batting = bool(ws.cell(row=r, column=7).value)
+        batters.append(Batter(first_name, last_name, age, runs, balls_played, is_on_strike, is_batting))
 
 
 def clear():
