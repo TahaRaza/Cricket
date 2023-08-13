@@ -1,8 +1,8 @@
 import random
+import os
 
 
 def menu():
-    global team1, team2
     while True:
         print(""
               "_________Menu_________\n"
@@ -12,7 +12,7 @@ def menu():
         user_input = str.upper(input("Enter a letter: "))
         match user_input:
             case 'S':
-                Match_starter()
+                match_starter()
             case 'X':
                 return
             case _:
@@ -33,7 +33,8 @@ def invalid_input():
         pass
 
 
-def Match_starter():
+def match_starter():
+    global team1, team2
     clear()
     print(""
           "________Teams_________\n"
@@ -48,6 +49,7 @@ def Match_starter():
             team1 = 'India'
         case _:
             invalid_input()
+            match_starter()
 
     tt = str.upper(input("Select Second Team: "))
     match tt:
@@ -57,6 +59,7 @@ def Match_starter():
             team2 = 'India'
         case _:
             invalid_input()
+            match_starter()
 
     if toss():
 
@@ -75,6 +78,8 @@ def start_match(t1, t2, toss_winner):
         case '0':
             print(f'{toss_winner} decided to Ball First!')
         case '1':
+            print(f'{toss_winner} decided to Bat First!')
+        case _:
             print(f'{toss_winner} decided to Batt First!')
 
     print(f"Match has been started between {t1} and {t2}.")
@@ -88,4 +93,4 @@ def toss():
 
 
 def clear():
-    print('\n ' * 20)
+    os.system('clear')  # This doesn't work
