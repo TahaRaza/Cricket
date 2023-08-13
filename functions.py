@@ -2,6 +2,7 @@ import random
 
 
 def my_menu():
+    global team1, team2
     while True:
         print(""
               "_________Menu_________\n"
@@ -11,9 +12,36 @@ def my_menu():
         user_input = str.upper(input("Enter a letter: "))
         match user_input:
             case 'S':
-                team1 = input("Enter First Team: ")
-                team2 = input("Enter Second Team: ")
-                start_match(team1, team2)
+                clear()
+                print(""
+                      "________Teams_________\n"
+                      "Pakistan            P\n"
+                      "India               I\n"
+                      "\n")
+                tt = str.upper(input("Select First Team: "))
+                match tt:
+                    case 'P':
+                        team1 = 'Pakistan'
+                    case 'I':
+                        team1 = 'India'
+                    case _:
+                        invalid_input()
+
+                tt = str.upper(input("Select Second Team: "))
+                match tt:
+                    case 'P':
+                        team2 = 'Pakistan'
+                    case 'I':
+                        team2 = 'India'
+                    case _:
+                        invalid_input()
+
+                if toss():
+
+                    start_match(team1, team2, team1)
+                else:
+
+                    start_match(team1, team2, team2)
             case 'X':
                 return
             case _:
@@ -34,7 +62,17 @@ def invalid_input():
         pass
 
 
-def start_match(t1, t2):
+def start_match(t1, t2, toss_winner):
+    print(f'{toss_winner} won the toss!\n'
+          'Press 0     to Ball\n'
+          'Press 1     to Bat \n')
+    user_input = str(input("Select: "))
+    match user_input:
+        case '0':
+            print(f'{toss_winner} decided to Ball First!')
+        case '1':
+            print(f'{toss_winner} decided to Batt First!')
+
     print(f"Match has been started between {t1} and {t2}.")
     pause()
     clear()
