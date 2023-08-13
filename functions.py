@@ -1,7 +1,7 @@
 import random
 
 
-def my_menu():
+def menu():
     global team1, team2
     while True:
         print(""
@@ -12,36 +12,7 @@ def my_menu():
         user_input = str.upper(input("Enter a letter: "))
         match user_input:
             case 'S':
-                clear()
-                print(""
-                      "________Teams_________\n"
-                      "Pakistan            P\n"
-                      "India               I\n"
-                      "\n")
-                tt = str.upper(input("Select First Team: "))
-                match tt:
-                    case 'P':
-                        team1 = 'Pakistan'
-                    case 'I':
-                        team1 = 'India'
-                    case _:
-                        invalid_input()
-
-                tt = str.upper(input("Select Second Team: "))
-                match tt:
-                    case 'P':
-                        team2 = 'Pakistan'
-                    case 'I':
-                        team2 = 'India'
-                    case _:
-                        invalid_input()
-
-                if toss():
-
-                    start_match(team1, team2, team1)
-                else:
-
-                    start_match(team1, team2, team2)
+                Match_starter()
             case 'X':
                 return
             case _:
@@ -60,6 +31,39 @@ def invalid_input():
         input("\n\nInvalid Input!!\n Press any key to retry\n")
     except KeyboardInterrupt:
         pass
+
+
+def Match_starter():
+    clear()
+    print(""
+          "________Teams_________\n"
+          "Pakistan            P\n"
+          "India               I\n"
+          "\n")
+    tt = str.upper(input("Select First Team: "))
+    match tt:
+        case 'P':
+            team1 = 'Pakistan'
+        case 'I':
+            team1 = 'India'
+        case _:
+            invalid_input()
+
+    tt = str.upper(input("Select Second Team: "))
+    match tt:
+        case 'P':
+            team2 = 'Pakistan'
+        case 'I':
+            team2 = 'India'
+        case _:
+            invalid_input()
+
+    if toss():
+
+        start_match(team1, team2, team1)
+    else:
+
+        start_match(team1, team2, team2)
 
 
 def start_match(t1, t2, toss_winner):
