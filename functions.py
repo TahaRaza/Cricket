@@ -151,7 +151,7 @@ def load_batters(team):
 
 
 def clear():
-    os.system('clear')  # This doesn't work
+    os.system('cls')  
 
 
 def find_bat(text):  # function to find "bat" in the string
