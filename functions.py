@@ -16,6 +16,7 @@ def menu():
         match user_input:
             case 'S':
                 match_starter()
+                break
             case 'X':
                 return
             case _:
@@ -54,6 +55,7 @@ def match_starter():
             invalid_input()
             match_starter()
 
+
     tt = str.upper(input("Select Second Team: "))
     match tt:
         case 'P':
@@ -64,45 +66,58 @@ def match_starter():
             invalid_input()
             match_starter()
 
+    # Second Parameter is toss winner
+
     if toss():
 
-        start_match(team1, team2, team1)
+        start_match(team2, team1)
     else:
 
-        start_match(team1, team2, team2)
+        start_match(team1, team2)
 
 
-# not completed
 
-def start_match(t1, t2, toss_winner):
-    print(f'{toss_winner} won the toss!\n'
+
+def start_match(t1, t2):
+    ballers, batters = None, None
+    print(f'{t2} won the toss!\n'
           'Press 0     to Ball\n'
           'Press 1     to Bat \n')
     user_input = str(input("Select: "))
     match user_input:
         case '0':
-            print(f'{toss_winner} decided to Ball First!')
-            if toss_winner == 'Pakistan':
-                load_ballers('PakBall')
-            else:
-                load_ballers('IndBall')  # not completed
+            print(f'{t2} decided to Ball First!')
+            file = first_three_Letters(t2) + 'Ball'
+            ballers = load_ballers(file)
+            file = first_three_Letters(t1) + 'Bat'
+            batters = load_batters(file)
 
         case '1':
-            print(f'{toss_winner} decided to Bat First!')
-            if toss_winner == 'Pakistan':
-                load_ballers('PakBat')
-            else:
-                load_ballers('IndBat')
+            print(f'{t2} decided to Bat First!')
+            file = first_three_Letters(t2) + 'Bat'
+            batters = load_batters(file)
+            file = first_three_Letters(t1) + 'Ball'
+            ballers = load_ballers(file)
         case _:
-            print(f'{toss_winner} decided to Batt First!')
-            if toss_winner == 'Pakistan':
-                load_ballers('PakBat')
-            else:
-                load_ballers('IndBat')
+            print(f'{t2} decided to Bat First!')
+            file = first_three_Letters(t2) + 'Bat'
+            batters = load_batters(file)
+            file = first_three_Letters(t1) + 'Ball'
+            ballers = load_ballers(file)
 
     print(f"Match has been started between {t1} and {t2}.")
     pause()
     clear()
+    play(batters, ballers)
+
+
+def play(batters, ballers):
+    over = 0
+    batters[0].is_on_strike = True
+    ballers[over].is_balling = True
+    print('Match has Started!!\n '
+          f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
+    return  # Will continue from here
 
 
 def toss():
@@ -138,7 +153,7 @@ def load_batters(team):
     # Load the workbook
     wb = load_workbook('Teams.xlsx')
     # accessing first sheet by its name 'Bat'
-    ws = wb['Bat']
+    ws = wb[team]
     for r in range(2, 13):  # 2 to 12+1
         first_name = str(ws.cell(row=r, column=1).value)
         last_name = str(ws.cell(row=r, column=2).value)
@@ -148,10 +163,11 @@ def load_batters(team):
         is_on_strike = bool(ws.cell(row=r, column=6).value)
         is_batting = bool(ws.cell(row=r, column=7).value)
         batters.append(Batter(first_name, last_name, age, runs, balls_played, is_on_strike, is_batting))
+        return batters
 
 
 def clear():
-    os.system('cls')  
+    os.system('cls')
 
 
 def find_bat(text):  # function to find "bat" in the string
@@ -166,3 +182,7 @@ def find_ball(text):  # function to find "ball" in the string
         return "Yes"
     else:
         return "No"
+
+
+def first_three_Letters(string):
+    return str(string[:3])

@@ -10,7 +10,7 @@ class Baller(Batter):
         self.is_bowling = is_balling
         self.no_of_balls = no_of_balls
 
-    def is_balling(self):
+    def get_is_balling(self):
         return bool(self.is_bowling)
 
     def get_no_of_balls(self):
