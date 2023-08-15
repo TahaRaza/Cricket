@@ -38,7 +38,7 @@ def invalid_input():
 
 
 def match_starter():
-    global team1, team2
+    team1, team2 = '', ''
     clear()
     print(""
           "________Teams_________\n"
@@ -54,7 +54,6 @@ def match_starter():
         case _:
             invalid_input()
             match_starter()
-
 
     tt = str.upper(input("Select Second Team: "))
     match tt:
@@ -74,8 +73,6 @@ def match_starter():
     else:
 
         start_match(team1, team2)
-
-
 
 
 def start_match(t1, t2):
@@ -117,7 +114,37 @@ def play(batters, ballers):
     ballers[over].is_balling = True
     print('Match has Started!!\n '
           f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
-    return  # Will continue from here
+
+
+def scoring(baller, batter):
+    option = scoring_menu()
+    match option:
+        case 'O':
+            "Out"
+        case 'B':
+            "Boundary"
+        case 'N':
+            "No Ball"
+        case 'D':
+            "Dot Ball"
+        case 'W':
+            "Wide Ball"  # will start from here
+
+
+def display_scores():
+    print('...')  # to be done
+
+
+def scoring_menu():
+    print('\n\n')
+    print("--------------------------------"
+          "Press O for Out"
+          "Press B for Boundary"
+          "Press N for No Ball"
+          "Press D for Dot Ball"
+          "Press W for Wide Ball")
+    user_input = str.upper(input('What happened on this Ball: '))
+    return user_input
 
 
 def toss():
