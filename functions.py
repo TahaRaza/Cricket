@@ -116,26 +116,56 @@ def play(batters, ballers):
     ballers[over].is_balling = True
     print('Match has Started!!\n '
           f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
-    scoring(ballers, batters)
+    scoring(ballers, batters, 0, 0, 1)
 
 
-def scoring(ballers, batters):
+def scoring(ballers, batters, ballers_index, batters_index1, batters_index2):
+    playing_batters = [batters[batters_index1], batters[batters_index2]]  # will sort it out tomorrow
     option = scoring_menu()
     match option:
         case 'O':
-            "Out"
+            ballers[ballers_index].no_of_balls += 1
+            batters[batters_index1].balls_played += 1
+            batters[batters_index1 + 2].is_on_strike = True
+            out = out_menu()
+            match out:
+                case 'R':
+                    r = input("How many runs were taken before run out: ")
+                    batters[batters_index1].runs += r
+                    playing_batters.append(batters_index1 + 2)
+                    if r % 2 == 0:
+                        playing_batters.pop(batters[batters_index1])
+                        batters_index1 += 1
+
+                    else:
+                        playing_batters.pop(batters[batters_index1 + 1])
+                case 'B':
+                    ballers[ballers_index].wickets += 1
+
         case 'B':
-            "Boundary"
+            batters[batters_index1].runs = int(print('Was it a six or four (Enter number): '))
+            ballers[ballers_index].no_of_balls += 1
+            batters[batters_index1].balls_played += 1
         case 'N':
             "No Ball"
         case 'D':
             "Dot Ball"
         case 'W':
-            "Wide Ball"  # will start from here
+            "Wide Ball"
 
 
 def display_scores():
     print('...')  # to be done
+
+
+def out_menu():
+    print('\n\n')
+    print("--------------------------------\n"
+          "Press R for Run out\n"
+          "Press B for Bowled\n"
+          )
+    user_input = str.upper(input('Enter a Letter: '))
+    return user_input
 
 
 def scoring_menu():
