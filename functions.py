@@ -16,7 +16,7 @@ def menu():
         match user_input:
             case 'S':
                 match_starter()
-                break
+                return
             case 'X':
                 return
             case _:
@@ -78,7 +78,7 @@ def match_starter():
 
 
 def start_match(t1, t2):
-    ballers, batters = None, None
+    ballers, batters = [], []
     print(f'{t2} won the toss!\n'
           'Press 0     to Ball\n'
           'Press 1     to Bat \n')
@@ -116,46 +116,63 @@ def play(batters, ballers):
     ballers[over].is_balling = True
     print('Match has Started!!\n '
           f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
-    scoring(ballers, batters, 0, 0, 1)
+
+    scoring(ballers, batters, over)  # Working Perfectly till here
 
 
-def scoring(ballers, batters, ballers_index, batters_index1, batters_index2):
-    playing_batters = [batters[batters_index1], batters[batters_index2]]  # will sort it out tomorrow
+def scoring(ballers, batters, over):
+    playing_batters = [batters[0], batters[1]]  # Here is  an issue, please check
     option = scoring_menu()
+    total_wickets, total_runs, extra_runs = 0, 0, 0
+    if ballers[over].no_of_balls > 6:
+        over += 1
     match option:
         case 'O':
-            ballers[ballers_index].no_of_balls += 1
-            batters[batters_index1].balls_played += 1
-            batters[batters_index1 + 2].is_on_strike = True
+            total_wickets += 1
+            ballers[over].no_of_balls += 1
+            playing_batters[0].balls_played += 1
+            playing_batters[0].is_on_strike = False
             out = out_menu()
             match out:
                 case 'R':
                     r = input("How many runs were taken before run out: ")
-                    batters[batters_index1].runs += r
-                    playing_batters.append(batters_index1 + 2)
+                    total_runs += r
+                    playing_batters[0].runs += r
+                    playing_batters.append(batters[total_wickets + 1])
                     if r % 2 == 0:
-                        playing_batters.pop(batters[batters_index1])
-                        batters_index1 += 1
+                        playing_batters.pop(playing_batters[0])
+                        playing_batters[1].is_on_strike = True
+                        playing_batters.reverse()
 
                     else:
-                        playing_batters.pop(batters[batters_index1 + 1])
+                        playing_batters.pop(playing_batters[1])
+                        playing_batters[1].is_on_strike = True
+                        playing_batters.reverse()
                 case 'B':
-                    ballers[ballers_index].wickets += 1
+                    playing_batters.append(batters[total_wickets + 1])
+                    playing_batters.pop(playing_batters[0])
+                    playing_batters[1].is_on_strike = True
+                    playing_batters.reverse()
 
         case 'B':
-            batters[batters_index1].runs = int(print('Was it a six or four (Enter number): '))
-            ballers[ballers_index].no_of_balls += 1
-            batters[batters_index1].balls_played += 1
+            r = int(print('Was it a six or four (Enter number): '))
+            playing_batters[0].runs += r
+            total_runs += r
+            ballers[over].no_of_balls += 1
+            playing_batters[0].balls_played += 1
         case 'N':
-            "No Ball"
+            ballers[over].no_of_balls += 1
+            total_runs += 1
+            extra_runs += 1
         case 'D':
-            "Dot Ball"
+            ballers[over].no_of_balls += 1
         case 'W':
-            "Wide Ball"
+            extra_runs += 1
 
 
-def display_scores():
-    print('...')  # to be done
+def display_scores(total_wickets, total_runs, extra_runs):
+    print(f'{total_runs}-{total_wickets}'
+          f'Extras: {extra_runs}')
 
 
 def out_menu():
