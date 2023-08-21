@@ -196,13 +196,14 @@ def scoring1(ballers, batters, over, pass_batters, pass_ballers):
                 if r % 2 != 0:
                     playing_batters.reverse()
             case 'E':
-                return 
+                return
         if ballers[over].no_of_balls > 5:
             over += 1
             if over > 4 or total_wickets == 10:
                 print("\nThe Innings has ended!\n")
                 print_all(batters, ballers)
                 play2(pass_batters, pass_ballers)
+                return 
 
             print("Over ended!!\n"
                   f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
