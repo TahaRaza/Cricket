@@ -161,29 +161,31 @@ def scoring(ballers, batters, over):
                 total_runs += r
                 ballers[over].no_of_balls += 1
                 playing_batters[0].balls_played += 1
-                ballers[over].runs_given+=r
+                ballers[over].runs_given += r
             case 'N':
                 r = int(input("How many runs were made on this NO Ball: "))
-                total_runs += r+1
+                total_runs += r + 1
                 extra_runs += 1
-                ballers[over].runs_given += r+1
+                ballers[over].runs_given += r + 1
                 print("It\'s a Free Hit")
             case 'D':
                 ballers[over].no_of_balls += 1
             case 'W':
                 total_runs += 1
                 extra_runs += 1
+            case 'R':
+                r = int(input("How many runs were made on this Ball: "))
             case 'E':
                 break
         if ballers[over].no_of_balls > 5:
             over += 1
             print("Over ended!!\n"
                   f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
-        display_scores(total_wickets, total_runs, extra_runs, ballers[over],playing_batters[0], playing_batters[1])
+        display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
 
 
 def display_scores(total_wickets, total_runs, extra_runs, baller, batter1, batter2):
-    ballers_over = int(baller.no_of_balls/6)
+    ballers_over = int(baller.no_of_balls / 6)
     ballers_balls = int(baller.no_of_balls % 6)  # ov.er will make over in the format Overs.balls
     print(f'{total_runs}-{total_wickets}\n'
           f'Extras: {extra_runs}\n\n'
@@ -213,6 +215,7 @@ def scoring_menu():
           "Press N for No Ball\n"
           "Press D for Dot Ball\n"
           "Press W for Wide Ball\n"
+          "Press R for Runs Taken Between the Wicket\n"
           "Press E to  End match due to Rain\n")
     user_input = str.upper(input('What happened on this Ball: '))
     return user_input
