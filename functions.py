@@ -88,37 +88,50 @@ def start_match(t1, t2):
             print(f'\n\n{t2} decided to Ball First!\n\n')
             file = first_three_Letters(t2) + 'Ball'
             ballers = load_ballers(file)
+            file2 = first_three_Letters(t2) + 'Bat'
+            pass_batters = load_batters(file2)
             file = first_three_Letters(t1) + 'Bat'
             batters = load_batters(file)
+            file2 = first_three_Letters(t1) + 'Ball'
+            pass_ballers = load_ballers(file2)
 
         case '1':
             print(f'\n\n{t2} decided to Bat First!\n\n')
             file = first_three_Letters(t2) + 'Bat'
+            file2 = first_three_Letters(t2) + 'Ball'
             batters = load_batters(file)
+            pass_ballers = load_ballers(file2)
             file = first_three_Letters(t1) + 'Ball'
+            file2 = first_three_Letters(t1) + 'Bat'
             ballers = load_ballers(file)
+            pass_batters = load_batters(file2)
+
         case _:
             print(f'\n\n{t2} decided to Bat First!\n\n')
             file = first_three_Letters(t2) + 'Bat'
+            file2 = first_three_Letters(t2) + 'Ball'
             batters = load_batters(file)
+            pass_ballers = load_ballers(file2)
             file = first_three_Letters(t1) + 'Ball'
+            file2 = first_three_Letters(t1) + 'Bat'
             ballers = load_ballers(file)
+            pass_batters = load_batters(file2)
 
     print(f"\n\nMatch has been started between {t1} and {t2}.")
     clear()
-    play(batters, ballers)
+    play1(batters, ballers, pass_batters, pass_ballers)
 
 
-def play(batters, ballers):
+def play1(batters, ballers, pass_batters, pass_ballers):
     over = 0
     batters[0].is_on_strike = True
     ballers[over].is_balling = True
     print(f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
 
-    scoring(ballers, batters, over)
+    scoring1(ballers, batters, over, pass_batters, pass_ballers)
 
 
-def scoring(ballers, batters, over):
+def scoring1(ballers, batters, over, pass_batters, pass_ballers):
     playing_batters = [batters[0], batters[1]]
     total_wickets, total_runs, extra_runs = 0, 0, 0
     while True:
@@ -174,14 +187,123 @@ def scoring(ballers, batters, over):
                 total_runs += 1
                 extra_runs += 1
             case 'R':
-                r = int(input("How many runs were made on this Ball: "))
+                r = int(input("How many runs were made on this Ball (1, 2 or 3): "))
+                ballers[over].no_of_balls += 1
+                ballers[over].runs_given += r
+                playing_batters[0].runs += r
+                total_runs += r
+                if r % 2 != 0:
+                    playing_batters.reverse()
             case 'E':
                 break
         if ballers[over].no_of_balls > 5:
             over += 1
+            if over > 4 or total_wickets == 10:
+                print("\nThe Innings has ended!\n")
+                print_all(batters, ballers)
+                play2(pass_batters, pass_ballers)
+
             print("Over ended!!\n"
                   f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
         display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
+
+
+def play2(batters, ballers):
+    over = 0
+    batters[0].is_on_strike = True
+    ballers[over].is_balling = True
+    print(f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
+
+    scoring2(ballers, batters, over)
+
+
+def scoring2(ballers, batters, over):
+    playing_batters = [batters[0], batters[1]]
+    total_wickets, total_runs, extra_runs = 0, 0, 0
+    while True:
+        option = scoring_menu()
+        if ballers[over].no_of_balls > 6:
+            over += 1
+        match option:
+            case 'O':
+                total_wickets += 1
+                ballers[over].wickets += 1
+                ballers[over].no_of_balls += 1
+                playing_batters[0].balls_played += 1
+                playing_batters[0].is_on_strike = False
+                out = out_menu()
+                match out:
+                    case 'R':
+                        r = int(input("How many runs were taken before run out: "))
+                        total_runs += r
+                        playing_batters[0].runs += r
+                        ballers[over].runs_given += r
+                        playing_batters.append(batters[total_wickets + 1])
+                        if r % 2 == 0:
+                            playing_batters.pop(0)
+                            playing_batters[1].is_on_strike = True
+                            playing_batters.reverse()
+
+                        else:
+                            playing_batters.pop(1)
+                            playing_batters[1].is_on_strike = True
+                            playing_batters.reverse()
+                    case 'B':  # this B is for Bowled
+                        playing_batters.append(batters[total_wickets + 1])
+                        playing_batters.pop(0)
+                        playing_batters[1].is_on_strike = True
+                        playing_batters.reverse()
+
+            case 'B':  # This B is for Boundary
+                r = int(input('Was it a six or four (Enter number): '))
+                playing_batters[0].runs += r
+                total_runs += r
+                ballers[over].no_of_balls += 1
+                playing_batters[0].balls_played += 1
+                ballers[over].runs_given += r
+            case 'N':
+                r = int(input("How many runs were made on this NO Ball: "))
+                total_runs += r + 1
+                extra_runs += 1
+                ballers[over].runs_given += r + 1
+                print("It\'s a Free Hit")
+            case 'D':
+                ballers[over].no_of_balls += 1
+            case 'W':
+                total_runs += 1
+                extra_runs += 1
+            case 'R':
+                r = int(input("How many runs were made on this Ball (1, 2 or 3): "))
+                ballers[over].no_of_balls += 1
+                ballers[over].runs_given += r
+                playing_batters[0].runs += r
+                total_runs += r
+                if r % 2 != 0:
+                    playing_batters.reverse()
+            case 'E':
+                break
+        if ballers[over].no_of_balls > 5:
+            over += 1
+            if over > 4 or total_wickets == 10:
+                print("\nThe Match has ended!\n")
+                print_all(batters, ballers)
+                return
+
+            print("Over ended!!\n"
+                  f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
+        display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
+
+
+def print_all(batters, ballers):
+    print("Batting: \n\n")
+    for i in range(0, len(batters)):
+        print(f"{batters[i].first_name} {batters[i].first_name} ({batters[i].age} years old) "
+              f" {batters[i].runs} on {batters[i].balls_played} balls\n\n")
+    print("Balling: \n\n")
+    for i in range(0, len(ballers)):
+        print(f"{ballers[i].first_name} {ballers[i].first_name} ({ballers[i].age} years old) "
+              f"Eco: {ballers[i].economy()} |  {ballers[i].wickets} - {ballers[i].runs_given}\n\n")
+
 
 
 def display_scores(total_wickets, total_runs, extra_runs, baller, batter1, batter2):
