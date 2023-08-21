@@ -196,7 +196,7 @@ def scoring1(ballers, batters, over, pass_batters, pass_ballers):
                 if r % 2 != 0:
                     playing_batters.reverse()
             case 'E':
-                break
+                return 
         if ballers[over].no_of_balls > 5:
             over += 1
             if over > 4 or total_wickets == 10:
