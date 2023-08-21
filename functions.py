@@ -191,6 +191,7 @@ def scoring1(ballers, batters, over, pass_batters, pass_ballers):
                 ballers[over].no_of_balls += 1
                 ballers[over].runs_given += r
                 playing_batters[0].runs += r
+                playing_batters[0].balls_played += 1
                 total_runs += r
                 if r % 2 != 0:
                     playing_batters.reverse()
@@ -277,6 +278,7 @@ def scoring2(ballers, batters, over):
                 ballers[over].no_of_balls += 1
                 ballers[over].runs_given += r
                 playing_batters[0].runs += r
+                playing_batters[0].balls_played += 1
                 total_runs += r
                 if r % 2 != 0:
                     playing_batters.reverse()
