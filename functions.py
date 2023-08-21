@@ -40,11 +40,11 @@ def invalid_input():
 def match_starter():
     team1, team2 = '', ''
     clear()
-    print(""
+    print("\n\n"
           "________Teams_________\n"
           "Pakistan            P\n"
           "India               I\n"
-          "\n")
+          "\n\n")
     tt = str.upper(input("Select First Team: "))
     match tt:
         case 'P':
@@ -79,33 +79,32 @@ def match_starter():
 
 def start_match(t1, t2):
     ballers, batters = [], []
-    print(f'{t2} won the toss!\n'
+    print(f'\n\n{t2} won the toss!\n'
           'Press 0     to Ball\n'
           'Press 1     to Bat \n')
     user_input = str(input("Select: "))
     match user_input:
         case '0':
-            print(f'{t2} decided to Ball First!')
+            print(f'\n\n{t2} decided to Ball First!\n\n')
             file = first_three_Letters(t2) + 'Ball'
             ballers = load_ballers(file)
             file = first_three_Letters(t1) + 'Bat'
             batters = load_batters(file)
 
         case '1':
-            print(f'{t2} decided to Bat First!')
+            print(f'\n\n{t2} decided to Bat First!\n\n')
             file = first_three_Letters(t2) + 'Bat'
             batters = load_batters(file)
             file = first_three_Letters(t1) + 'Ball'
             ballers = load_ballers(file)
         case _:
-            print(f'{t2} decided to Bat First!')
+            print(f'\n\n{t2} decided to Bat First!\n\n')
             file = first_three_Letters(t2) + 'Bat'
             batters = load_batters(file)
             file = first_three_Letters(t1) + 'Ball'
             ballers = load_ballers(file)
 
-    print(f"Match has been started between {t1} and {t2}.")
-    pause()
+    print(f"\n\nMatch has been started between {t1} and {t2}.")
     clear()
     play(batters, ballers)
 
@@ -114,65 +113,86 @@ def play(batters, ballers):
     over = 0
     batters[0].is_on_strike = True
     ballers[over].is_balling = True
-    print('Match has Started!!\n '
-          f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
+    print(f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
 
     scoring(ballers, batters, over)  # Working Perfectly till here
 
 
 def scoring(ballers, batters, over):
-    playing_batters = [batters[0], batters[1]]  # Here is  an issue, please check
-    option = scoring_menu()
+    playing_batters = [batters[0], batters[1]]
     total_wickets, total_runs, extra_runs = 0, 0, 0
-    if ballers[over].no_of_balls > 6:
-        over += 1
-    match option:
-        case 'O':
-            total_wickets += 1
-            ballers[over].no_of_balls += 1
-            playing_batters[0].balls_played += 1
-            playing_batters[0].is_on_strike = False
-            out = out_menu()
-            match out:
-                case 'R':
-                    r = input("How many runs were taken before run out: ")
-                    total_runs += r
-                    playing_batters[0].runs += r
-                    playing_batters.append(batters[total_wickets + 1])
-                    if r % 2 == 0:
-                        playing_batters.pop(playing_batters[0])
+    while True:
+        option = scoring_menu()
+        if ballers[over].no_of_balls > 6:
+            over += 1
+        match option:
+            case 'O':
+                total_wickets += 1
+                ballers[over].wickets += 1
+                ballers[over].no_of_balls += 1
+                playing_batters[0].balls_played += 1
+                playing_batters[0].is_on_strike = False
+                out = out_menu()
+                match out:
+                    case 'R':
+                        r = int(input("How many runs were taken before run out: "))
+                        total_runs += r
+                        playing_batters[0].runs += r
+                        ballers[over].runs_given += r
+                        playing_batters.append(batters[total_wickets + 1])
+                        if r % 2 == 0:
+                            playing_batters.pop(0)
+                            playing_batters[1].is_on_strike = True
+                            playing_batters.reverse()
+
+                        else:
+                            playing_batters.pop(1)
+                            playing_batters[1].is_on_strike = True
+                            playing_batters.reverse()
+                    case 'B':  # this B is for Bowled
+                        playing_batters.append(batters[total_wickets + 1])
+                        playing_batters.pop(0)
                         playing_batters[1].is_on_strike = True
                         playing_batters.reverse()
 
-                    else:
-                        playing_batters.pop(playing_batters[1])
-                        playing_batters[1].is_on_strike = True
-                        playing_batters.reverse()
-                case 'B':
-                    playing_batters.append(batters[total_wickets + 1])
-                    playing_batters.pop(playing_batters[0])
-                    playing_batters[1].is_on_strike = True
-                    playing_batters.reverse()
+            case 'B':  # This B is for Boundary
+                r = int(input('Was it a six or four (Enter number): '))
+                playing_batters[0].runs += r
+                total_runs += r
+                ballers[over].no_of_balls += 1
+                playing_batters[0].balls_played += 1
+                ballers[over].runs_given+=r
+            case 'N':
+                r = int(input("How many runs were made on this NO Ball: "))
+                total_runs += r+1
+                extra_runs += 1
+                ballers[over].runs_given += r+1
+                print("It\'s a Free Hit")
+            case 'D':
+                ballers[over].no_of_balls += 1
+            case 'W':
+                total_runs += 1
+                extra_runs += 1
+            case 'E':
+                break
+        if ballers[over].no_of_balls > 5:
+            over += 1
+            print("Over ended!!\n"
+                  f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
+        display_scores(total_wickets, total_runs, extra_runs, ballers[over],playing_batters[0], playing_batters[1])
 
-        case 'B':
-            r = int(print('Was it a six or four (Enter number): '))
-            playing_batters[0].runs += r
-            total_runs += r
-            ballers[over].no_of_balls += 1
-            playing_batters[0].balls_played += 1
-        case 'N':
-            ballers[over].no_of_balls += 1
-            total_runs += 1
-            extra_runs += 1
-        case 'D':
-            ballers[over].no_of_balls += 1
-        case 'W':
-            extra_runs += 1
 
-
-def display_scores(total_wickets, total_runs, extra_runs):
-    print(f'{total_runs}-{total_wickets}'
-          f'Extras: {extra_runs}')
+def display_scores(total_wickets, total_runs, extra_runs, baller, batter1, batter2):
+    ballers_over = int(baller.no_of_balls/6)
+    ballers_balls = int(baller.no_of_balls % 6)  # ov.er will make over in the format Overs.balls
+    print(f'{total_runs}-{total_wickets}\n'
+          f'Extras: {extra_runs}\n\n'
+          f'Batters: \n'
+          f'{batter1.first_name} {batter1.last_name} : {batter1.runs}* - {batter1.balls_played}\n'
+          f'{batter2.first_name} {batter2.last_name} : {batter2.runs} - {batter2.balls_played}\n'
+          f'Ballers: \n'
+          f'{baller.first_name} {baller.last_name} : {baller.wickets} - {baller.runs_given} '
+          f'({ballers_over}.{ballers_balls})\n')
 
 
 def out_menu():
@@ -192,7 +212,8 @@ def scoring_menu():
           "Press B for Boundary\n"
           "Press N for No Ball\n"
           "Press D for Dot Ball\n"
-          "Press W for Wide Ball\n")
+          "Press W for Wide Ball\n"
+          "Press E to  End match due to Rain\n")
     user_input = str.upper(input('What happened on this Ball: '))
     return user_input
 
@@ -222,7 +243,7 @@ def load_ballers(team):
         no_of_balls = int(ws.cell(row=r, column=11).value)
         ballers.append(Baller(first_name, last_name, age, runs, balls_played, is_on_strike, is_batting,
                               wickets, runs_given, is_balling, no_of_balls))
-        return ballers
+    return ballers
 
 
 def load_batters(team):
@@ -240,7 +261,7 @@ def load_batters(team):
         is_on_strike = bool(ws.cell(row=r, column=6).value)
         is_batting = bool(ws.cell(row=r, column=7).value)
         batters.append(Batter(first_name, last_name, age, runs, balls_played, is_on_strike, is_batting))
-        return batters
+    return batters
 
 
 def clear():
