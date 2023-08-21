@@ -115,7 +115,7 @@ def play(batters, ballers):
     ballers[over].is_balling = True
     print(f'It\'s {batters[0].first_name} {batters[0].last_name} Verses {ballers[0].first_name} {ballers[0].last_name}')
 
-    scoring(ballers, batters, over)  # Working Perfectly till here
+    scoring(ballers, batters, over)
 
 
 def scoring(ballers, batters, over):
