@@ -145,6 +145,9 @@ def scoring1(ballers, batters, over, pass_batters, pass_ballers):
                 ballers[over].no_of_balls += 1
                 playing_batters[0].balls_played += 1
                 playing_batters[0].is_on_strike = False
+                if total_wickets < 10:
+                    playing_batters.append(batters[total_wickets + 1])
+                    playing_batters[2].is_on_strike = True
                 out = out_menu()
                 match out:
                     case 'R':
@@ -152,20 +155,15 @@ def scoring1(ballers, batters, over, pass_batters, pass_ballers):
                         total_runs += r
                         playing_batters[0].runs += r
                         ballers[over].runs_given += r
-                        playing_batters.append(batters[total_wickets + 1])
                         if r % 2 == 0:
                             playing_batters.pop(0)
-                            playing_batters[1].is_on_strike = True
                             playing_batters.reverse()
 
                         else:
                             playing_batters.pop(1)
-                            playing_batters[1].is_on_strike = True
                             playing_batters.reverse()
                     case 'B':  # this B is for Bowled
-                        playing_batters.append(batters[total_wickets + 1])
                         playing_batters.pop(0)
-                        playing_batters[1].is_on_strike = True
                         playing_batters.reverse()
 
             case 'B':  # This B is for Boundary
@@ -203,11 +201,18 @@ def scoring1(ballers, batters, over, pass_batters, pass_ballers):
                 print("\nThe Innings has ended!\n")
                 print_all(batters, ballers)
                 play2(pass_batters, pass_ballers)
-                return 
+                return
 
             print("Over ended!!\n"
                   f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
-        display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
+        if total_wickets < 10:
+            display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
+        else:
+            display_scores1(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0])
+            print("\nThe Innings has ended!\n")
+            print_all(batters, ballers)
+            play2(pass_batters, pass_ballers)
+            return
 
 
 def play2(batters, ballers):
@@ -233,6 +238,9 @@ def scoring2(ballers, batters, over):
                 ballers[over].no_of_balls += 1
                 playing_batters[0].balls_played += 1
                 playing_batters[0].is_on_strike = False
+                if total_wickets < 10:
+                    playing_batters.append(batters[total_wickets + 1])
+                    playing_batters[2].is_on_strike = True
                 out = out_menu()
                 match out:
                     case 'R':
@@ -240,20 +248,16 @@ def scoring2(ballers, batters, over):
                         total_runs += r
                         playing_batters[0].runs += r
                         ballers[over].runs_given += r
-                        playing_batters.append(batters[total_wickets + 1])
                         if r % 2 == 0:
                             playing_batters.pop(0)
-                            playing_batters[1].is_on_strike = True
                             playing_batters.reverse()
 
                         else:
                             playing_batters.pop(1)
-                            playing_batters[1].is_on_strike = True
                             playing_batters.reverse()
                     case 'B':  # this B is for Bowled
-                        playing_batters.append(batters[total_wickets + 1])
+
                         playing_batters.pop(0)
-                        playing_batters[1].is_on_strike = True
                         playing_batters.reverse()
 
             case 'B':  # This B is for Boundary
@@ -294,19 +298,24 @@ def scoring2(ballers, batters, over):
 
             print("Over ended!!\n"
                   f"{ballers[over].first_name} {ballers[over].last_name}\'s over has started.\n")
-        display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
+        if total_wickets < 10:
+            display_scores(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0], playing_batters[1])
+        else:
+            display_scores1(total_wickets, total_runs, extra_runs, ballers[over], playing_batters[0])
+            print("\nThe Match has ended!\n")
+            print_all(batters, ballers)
+            return
 
 
 def print_all(batters, ballers):
     print("Batting: \n\n")
     for i in range(0, len(batters)):
-        print(f"{batters[i].first_name} {batters[i].first_name} ({batters[i].age} years old) "
+        print(f"{batters[i].first_name} {batters[i].last_name} ({batters[i].age} years old) "
               f" {batters[i].runs} on {batters[i].balls_played} balls\n\n")
     print("Balling: \n\n")
     for i in range(0, len(ballers)):
         print(f"{ballers[i].first_name} {ballers[i].first_name} ({ballers[i].age} years old) "
               f"Eco: {ballers[i].economy()} |  {ballers[i].wickets} - {ballers[i].runs_given}\n\n")
-
 
 
 def display_scores(total_wickets, total_runs, extra_runs, baller, batter1, batter2):
@@ -317,6 +326,17 @@ def display_scores(total_wickets, total_runs, extra_runs, baller, batter1, batte
           f'Batters: \n'
           f'{batter1.first_name} {batter1.last_name} : {batter1.runs}* - {batter1.balls_played}\n'
           f'{batter2.first_name} {batter2.last_name} : {batter2.runs} - {batter2.balls_played}\n'
+          f'Ballers: \n'
+          f'{baller.first_name} {baller.last_name} : {baller.wickets} - {baller.runs_given} '
+          f'({ballers_over}.{ballers_balls})\n')
+
+def display_scores1(total_wickets, total_runs, extra_runs, baller, batter1):
+    ballers_over = int(baller.no_of_balls / 6)
+    ballers_balls = int(baller.no_of_balls % 6)  # ov.er will make over in the format Overs.balls
+    print(f'{total_runs}-{total_wickets}\n'
+          f'Extras: {extra_runs}\n\n'
+          f'Batters: \n'
+          f'{batter1.first_name} {batter1.last_name} : {batter1.runs}* - {batter1.balls_played}\n'
           f'Ballers: \n'
           f'{baller.first_name} {baller.last_name} : {baller.wickets} - {baller.runs_given} '
           f'({ballers_over}.{ballers_balls})\n')
