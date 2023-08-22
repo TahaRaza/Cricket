@@ -1,15 +1,5 @@
-# This is my Cricket Project
-# import TeamClass
-import functions
-# from functions import my_menu, pause
-
-#
-# menu()
-# pause()
-# player100 = Baller("Baber", "Azam", 25, 0, 0, False, False,
-#                    0, 0, False, 0)
-# player100.show_details()
-
+from functions import menu, pause
 
 # I test here
-functions.menu()
+menu()
+pause()
