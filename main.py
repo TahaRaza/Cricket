@@ -13,11 +13,10 @@ team2 = Team("India")
 match = Match(team1, team2)
 match.simulate_match()
 
-# Out Catch out: Virat Kohli is caught by Muhammad Hasnain
 # No ball 4/6 runs not added in score..
-# Enter the type of out (e.g., bowled, caught, LBW): b ::: KL Rahul is b by Imad Waseem
 # Rahul  Chahar : SUS
-# Player changed when over starts n wide
+# Player changed when over starts AND wide
+
 #### Bowling team:Pakistan:  Second inning does not start rathar this error
 # Traceback (most recent call last):
 #   File "c:\Users\thraz\OneDrive\Desktop\CricketProject2\main.py", line 15, in <module>
