@@ -1,5 +1,6 @@
 from PlayerClass import Player
 
+
 class Batter(Player):
     """Represents a cricket batter with specific attributes and methods for batting statistics."""
 
@@ -7,14 +8,14 @@ class Batter(Player):
         """Initializes a Batter object with attributes from Player and batting-specific attributes."""
         super().__init__(first_name, last_name, age)  # Inherit attributes from Player
         # Batting-specific attributes
-        self.runs = 0          # Total runs scored
+        self.runs = 0  # Total runs scored
         self.is_on_strike = False  # Indicates if the batter is currently on strike
-        self.is_batting = False     # Indicates if the batter is currently batting
+        self.is_batting = False  # Indicates if the batter is currently batting
         self.balls_played = 0  # Number of balls faced
-        self.dismissal_type = None    # Type of dismissal (if out)
-        self.is_out = False          # True if the batter is out, False otherwise
-        self.fours = 0               # Number of fours hit
-        self.sixes = 0               # Number of sixes hit
+        self.dismissal_type = None  # Type of dismissal (if out)
+        self.is_out = False  # True if the batter is out, False otherwise
+        self.fours = 0  # Number of fours hit
+        self.sixes = 0  # Number of sixes hit
         self.strike_rate = 0
 
     # Getters (accessors) for batting-specific attributes
@@ -33,13 +34,14 @@ class Batter(Player):
     def get_balls_played(self):
         """Returns the number of balls faced by the batter."""
         return self.balls_played
+
     def get_strike_rate(self):
         """Returns the Strike rate of the batter."""
         self.set_strike_rate()
         return self.strike_rate
+
     def get_full_name(self):
         return super().get_full_name()
-    
 
     # Methods to display batter information
     def show_details(self):
@@ -63,13 +65,13 @@ class Batter(Player):
 
     def increment_fours(self):
         """Increments the number of fours hit by the batter."""
-        self.balls_played+=1
+        self.balls_played += 1
         self.fours += 1
         self.increment_runs(4)
 
     def increment_sixes(self):
         """Increments the number of sixes hit by the batter."""
-        self.balls_played+=1
+        self.balls_played += 1
         self.sixes += 1
         self.increment_runs(6)
 
@@ -77,8 +79,8 @@ class Batter(Player):
     def set_dismissal_type(self, dismissal_type):
         """Sets the type of dismissal for the batter."""
         self.dismissal_type = dismissal_type
-        self.is_out = True  # Mark the batter as out
-    
+        self.is_out = True  # Mark the better as out
+
     def set_strike_rate(self):
         if self.balls_played <= 0:
             self.strike_rate = 0

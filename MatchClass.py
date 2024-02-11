@@ -2,7 +2,32 @@ import random
 from datetime import date
 
 
+def scoring_menu():
+    # ------------------------Showing Score Menu----------------------------#
+    print("\n\n")
+    print("--------------------------------\n"
+          "Press O for Out\n"
+          "Press B for Boundary\n"
+          "Press N for No Ball\n"
+          "Press D for Dot Ball\n"
+          "Press W for Wide Ball\n"
+          "Press R for Runs Taken Between the Wicket\n"
+          "Press E to End match due to Rain\n")
+    user_input = str.upper(input('What happened on this Ball: '))
+    return user_input
+
+
 class Match:
+    _ball_counted = True
+
+    @classmethod
+    def set_ball_counted(cls, value):
+        cls._ball_counted = value
+
+    @classmethod
+    def get_ball_counted(cls):
+        return cls._ball_counted
+
     def __init__(self, team1, team2):
         self.team1 = team1
         self.team2 = team2
@@ -11,6 +36,7 @@ class Match:
         self.toss_winner = None
         self.toss_winner_decision = None
         self.current_innings = 1
+        self.current_bowler = None
         self.batting_team = None
         self.bowling_team = None
         self.target = 0
@@ -58,20 +84,6 @@ class Match:
         elif self.current_innings == 3:
             return
 
-    def scoring_menu(self):
-        # ------------------------Showing Score Menu----------------------------#
-        print("\n\n")
-        print("--------------------------------\n"
-              "Press O for Out\n"
-              "Press B for Boundary\n"
-              "Press N for No Ball\n"
-              "Press D for Dot Ball\n"
-              "Press W for Wide Ball\n"
-              "Press R for Runs Taken Between the Wicket\n"
-              "Press E to End match due to Rain\n")
-        user_input = str.upper(input('What happened on this Ball: '))
-        return user_input
-
     def handle_out(self):
         # -------------------------Checking Out Type ------------------------------#
         while True:
@@ -98,21 +110,25 @@ class Match:
             while True:
                 caught_by = int(input("The Player number from above who caught the catch(1-11): "))
 
-                if caught_by < 12 and caught_by > 0:
+                if 0 < caught_by < 12:
                     break
                 else:
                     print("Invalid NUmber. Please enter a valid number (1 to 11).")
 
-            if self.bowling_team.batters[
-                caught_by - 1].get_full_name() == self.bowling_team.current_bowler.get_full_name():
+            if (self.bowling_team.batters[caught_by - 1].get_full_name() ==
+                    self.bowling_team.current_bowler.get_full_name()):
                 print(
-                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is caught n Bowled by {self.bowling_team.batters[caught_by - 1].get_full_name()}.")
+                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is caught n Bowled "
+                    f"by {self.bowling_team.batters[caught_by - 1].get_full_name()}.")
             else:
                 print(
-                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Out!! Caught by {self.bowling_team.batters[caught_by - 1].get_full_name()}")
+                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Out!! Caught "
+                    f"by {self.bowling_team.batters[caught_by - 1].get_full_name()}")
         else:
             print(
-                f"\n\n{self.batting_team.current_batters[0].get_full_name()} is {self.batting_team.current_batters[0].dismissal_type} by {self.bowling_team.current_bowler.get_full_name()}")
+                f"\n\n{self.batting_team.current_batters[0].get_full_name()} "
+                f"is {self.batting_team.current_batters[0].dismissal_type} "
+                f"by {self.bowling_team.current_bowler.get_full_name()}")
 
         # -----------------Removing Out Player------------------------#
 
@@ -161,10 +177,10 @@ class Match:
         # Update batter's stats (runs scored, balls faced)
         if runs == 4:
             self.batting_team.current_batters[0].increment_fours()
-            self.batting_team.increment_runs(1)
+            self.batting_team.increment_runs(5)
         elif runs == 6:
             self.batting_team.current_batters[0].increment_sixes()
-            self.batting_team.increment_runs(1)
+            self.batting_team.increment_runs(7)
         else:
             self.batting_team.current_batters[0].increment_runs(runs)
             self.batting_team.increment_runs(runs + 1)
@@ -177,6 +193,7 @@ class Match:
             self.batting_team.current_batters.reverse()
 
         print("It's a Free Hit")  # Indicate free hit for the next ball
+        self.set_ball_counted(False)
 
     def handle_dot_ball(self):
         self.bowling_team.increment_ball()
@@ -189,6 +206,7 @@ class Match:
         self.batting_team.increment_runs(runs + 1)
         self.bowling_team.current_bowler.increment_runs_given(runs + 1)
         self.bowling_team.increment_total_extras(runs + 1)
+        self.set_ball_counted(False)
 
     def handle_runs(self):
         runs = int(input("How many runs were made on this Ball: "))
@@ -213,7 +231,7 @@ class Match:
             print(f"{batters.get_full_name()}: {batters.runs}-{batters.balls_played} S/R: {batters.get_strike_rate()}")
         print(f"Bowling team:{self.bowling_team.name}: ")
         for bowlers in self.bowling_team.bowlers:
-            print(f"{bowlers.get_full_name()}: {batters.runs_given}-{batters.no_of_balls} eco: {batters.get_economy()}")
+            print(f"{bowlers.get_full_name()}: {bowlers.runs_given}-{bowlers.no_of_balls} eco: {bowlers.get_economy()}")
 
         print("\n_______________________________Starting Second Innings_______________________________\n")
         self.batting_team, self.bowling_team = self.bowling_team, self.batting_team
@@ -262,11 +280,14 @@ class Match:
         print(f" Current Ball: {self.bowling_team.current_ball}")
         print(f" Current Over: {self.bowling_team.current_over}")
         print(
-            f" Current Baller: {self.bowling_team.get_current_bowler().get_full_name()}\n Economy: {self.bowling_team.get_current_bowler().get_economy()}")
+            f" Current Baller: {self.bowling_team.get_current_bowler().get_full_name()}\n "
+            f"Economy: {self.bowling_team.get_current_bowler().get_economy()}")
         print(
-            f" Batter on Strike: {self.batting_team.current_batters[0].get_full_name()}\n Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}")
+            f" Batter on Strike: {self.batting_team.current_batters[0].get_full_name()}\n "
+            f"Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}")
         print(
-            f" Batters on Pitch: {self.batting_team.current_batters[0].get_full_name()} and {self.batting_team.current_batters[1].get_full_name()}")
+            f" Batters on Pitch: {self.batting_team.current_batters[0].get_full_name()} "
+            f"and {self.batting_team.current_batters[1].get_full_name()}")
 
     def check_set_batter(self):
         if self.bowling_team.current_ball % 6 == 0:
@@ -282,8 +303,9 @@ class Match:
         return self.target
 
     def scoring(self, innings):
+
         while self.current_innings < innings + 1:
-            input_ = self.scoring_menu()
+            input_ = scoring_menu()
 
             if input_ == "O":
                 self.handle_out()
@@ -300,11 +322,15 @@ class Match:
             elif input_ == "E":
                 break
 
-            self.set_bowler()
-            self.check_set_batter()
+            if self.get_ball_counted():
+                self.set_bowler()
+                self.check_set_batter()
+            else:
+                self.set_ball_counted(True)
+
             self.display_scorecard()
 
             # Check if inning has end
-            isEnded = self.is_innings_ended()
-            if isEnded:
+            is_ended = self.is_innings_ended()
+            if is_ended:
                 return
