@@ -28,7 +28,7 @@ class Match:
     def get_ball_counted(cls):
         return cls._ball_counted
 
-    def __init__(self, team1, team2):
+    def __init__(self, team1, team2, match_type):
         self.team1 = team1
         self.team2 = team2
         self.venue = input("Enter the venue of the match: ")
@@ -40,8 +40,11 @@ class Match:
         self.batting_team = None
         self.bowling_team = None
         self.target = 0
+        self.match_type = match_type
+        self.total_overs = 0
 
     def simulate_match(self):
+        self.set_total_overs()
         self.toss()  # simulates the toss and sets toss_winner and toss_winner_decision
         self.start_innings()
         self.first_innings()
@@ -207,6 +210,8 @@ class Match:
         self.bowling_team.current_bowler.increment_runs_given(runs + 1)
         self.bowling_team.increment_total_extras(runs + 1)
         self.set_ball_counted(False)
+        if runs % 2 == 1:
+            self.batting_team.current_batters.reverse()
 
     def handle_runs(self):
         runs = int(input("How many runs were made on this Ball: "))
@@ -222,6 +227,10 @@ class Match:
         # Swap batters if needed
         if runs % 2 == 1:
             self.batting_team.current_batters.reverse()
+
+    def handle_exit(self):
+        self.current_innings += 1
+        print("Exiting...")
 
     def second_innings(self):
         self.set_target()
@@ -243,7 +252,8 @@ class Match:
     def is_innings_ended(self):
 
         if self.current_innings == 2:
-            if self.batting_team.total_team_score == (self.target - 1) and self.bowling_team.get_int_over() == 5.0:
+            if (self.batting_team.total_team_score == (self.target - 1) and
+                    self.bowling_team.get_int_over() == self.total_overs):
                 print("Match Has Ended in a Draw!")
                 self.current_innings += 1
                 return True
@@ -251,7 +261,7 @@ class Match:
                 print(f"match is over\n {self.batting_team.name} won!")
                 self.current_innings += 1
                 return True
-            elif self.bowling_team.get_int_over() == 5.0:
+            elif self.bowling_team.get_int_over() == self.total_overs:
                 print(f"match is over\n {self.bowling_team.name} won!")
                 self.current_innings += 1
                 return True
@@ -259,7 +269,7 @@ class Match:
         if self.batting_team.total_team_wickets == 10:
             print("All out!")
             self.current_innings += 1
-        elif self.bowling_team.get_int_over() == 5:
+        elif self.bowling_team.get_int_over() == self.total_overs:
             print("Overs completed!")
             self.current_innings += 1
 
@@ -299,6 +309,21 @@ class Match:
     def set_target(self):
         self.target = self.batting_team.total_team_score + 1
 
+    def set_total_overs(self):
+        match self.match_type:
+            case "Super Over: 1 Over Match":  # 1 overs
+                self.total_overs = 1
+            case "FIVES: 5 Over Match":  # 5 overs
+                self.total_overs = 5
+            case "T10: 10 Over Match":  # 10 overs
+                self.total_overs = 10
+            case "T20: 20 Over Match":  # 20 overs
+                self.total_overs = 20
+            case "ODI: 50 Over Match":  # 50 overs
+                self.total_overs = 50
+            case _:
+                raise ValueError("Invalid match type")
+
     def get_target(self):
         return self.target
 
@@ -320,7 +345,7 @@ class Match:
             elif input_ == "R":
                 self.handle_runs()
             elif input_ == "E":
-                break
+                self.handle_exit()
 
             if self.get_ball_counted():
                 self.set_bowler()
