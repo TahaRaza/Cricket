@@ -18,6 +18,7 @@ class Team:
         self.total_team_score = 0  # Total team score
         self.total_team_wickets = 0  # Total team Wickets
         self.total_extras = 0  # Total extras
+        self.run_outs = 0
 
         # Add players during initialization
         self.add_players(self.name)
@@ -90,9 +91,15 @@ class Team:
         # Increment ball and over count
         self.increment_ball()
 
+    def increment_team_score(self, runs):
+        self.total_team_score += runs
+
     def increment_ball(self):
         self.current_ball += 1
         self.set_over()
+
+    def increment_run_outs(self):
+        self.run_outs += 1
 
     # Getter Functions --------------------------------
 

@@ -11,22 +11,22 @@ class Bowler(Batter):
         self.wickets = 0
         self.runs_given = 0
         self.is_bowling = False  # Indicates if the bowler is currently bowling
-        self.no_of_balls = 0  # Number of balls bowled
+        self.no_of_balls_bowled = 0  # Number of balls bowled
 
     # Getters (accessors) for bowling-specific attributes
     def get_is_bowling(self):
         """Returns True if the bowler is currently bowling, False otherwise."""
         return self.is_bowling
 
-    def get_no_of_balls(self):
+    def get_no_of_balls_bowled(self):
         """Returns the number of balls bowled by the bowler."""
-        return self.no_of_balls
+        return self.no_of_balls_bowled
 
     def get_economy(self):
         """Calculates and returns the bowler's economy rate (runs conceded per over)."""
-        if self.get_no_of_balls() > 0:
-            # Calculate economy rate (runs per over * 6)
-            return round((self.runs_given * 6) / self.get_no_of_balls(), 2)
+        if self.get_no_of_balls_bowled() > 0:
+            # Calculate economy rate (runs per over => runs / (num of ball bowled / 6))
+            return round(((self.runs_given * 6) / self.get_no_of_balls_bowled()), 2)
         else:
             # Return 0 if no balls have been bowled
             return 0
@@ -47,7 +47,7 @@ class Bowler(Batter):
         """Prints the bowler's details, including both batting and bowling statistics."""
         super().show_details()  # Print basic player details from Batter class
         print("Bowling:")
-        if self.get_runs() or self.get_no_of_balls() > 0:
+        if self.get_runs() or self.get_no_of_balls_bowled() > 0:
             # Print bowling statistics if the bowler has bowled
             print(f"Economy: {self.get_economy()} \n{self.get_wickets()}/{self.get_runs_given()}")
         else:
@@ -64,4 +64,4 @@ class Bowler(Batter):
 
     def increment_balls_bowled(self):
         """Increments the number of balls bowled by the bowler."""
-        self.no_of_balls += 1
+        self.no_of_balls_bowled += 1

@@ -90,22 +90,25 @@ class Match:
     def handle_out(self):
         # -------------------------Checking Out Type ------------------------------#
         while True:
-            out_type = input("Enter the type of out (e.g., bowled, caught, LBW): ")
-            valid_types = ["bowled", "caught", "lbw"]
+            out_type = input("Enter the type of out (e.g., bowled, caught, LBW, run out, stump): ")
+            valid_types = ["bowled", "caught", "lbw", "run out", "stump"]
             if out_type.lower() in valid_types:
                 break
             else:
                 print("Invalid out type. Please enter a valid type.")
+        if out_type == "run out":
+            self.handle_run_out()
+            return
 
-        self.batting_team.current_batters[0].dismissal_type = out_type  # additional
-        self.batting_team.current_batters[0].is_out = True  # additional
+        self.batting_team.current_batters[0].dismissal_type = out_type
+        self.batting_team.current_batters[0].is_out = True
         self.batting_team.current_batters[0].increment_balls_played()
         self.bowling_team.increment_wickets()
-        self.bowling_team.increment_ball()
-        self.bowling_team.bowlers[self.bowling_team.get_int_over()].increment_wickets()
+        self.bowling_team.current_bowler.increment_wickets()
 
         # -------------------------- Checking Caught and Printing-------------------------- #
         if out_type.lower() == 'caught':
+            self.bowling_team.increment_ball()
             i = 1
             for player in self.bowling_team.batters:
                 print(f" {i}: {player.get_full_name()}")
@@ -116,7 +119,7 @@ class Match:
                 if 0 < caught_by < 12:
                     break
                 else:
-                    print("Invalid NUmber. Please enter a valid number (1 to 11).")
+                    print("Invalid Number. Please enter a valid number (1 to 11).")
 
             if (self.bowling_team.batters[caught_by - 1].get_full_name() ==
                     self.bowling_team.current_bowler.get_full_name()):
@@ -127,7 +130,21 @@ class Match:
                 print(
                     f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Out!! Caught "
                     f"by {self.bowling_team.batters[caught_by - 1].get_full_name()}")
+        elif out_type.lower() == "stump":
+            is_wide = input("Was it a Wide Ball(y/n): ")
+            if is_wide == "y":
+                self.batting_team.increment_team_score(1)
+                self.bowling_team.current_bowler.increment_runs_given(runs_conceded=1)
+                self.bowling_team.increment_total_extras(total_extras=1)
+            else:
+                self.bowling_team.current_bowler.increment_balls_bowled()
+                self.bowling_team.increment_ball()
+            print(
+                f"\n\n{self.batting_team.current_batters[0].get_full_name()} "
+                f"is {self.batting_team.current_batters[0].dismissal_type} "
+                f"by {self.bowling_team.current_bowler.get_full_name()}")
         else:
+            self.bowling_team.increment_ball()
             print(
                 f"\n\n{self.batting_team.current_batters[0].get_full_name()} "
                 f"is {self.batting_team.current_batters[0].dismissal_type} "
@@ -206,7 +223,7 @@ class Match:
 
     def handle_wide_ball(self):
         runs = int(input("How many Extra Runs team took on Wide: "))
-        self.batting_team.increment_runs(runs + 1)
+        self.batting_team.increment_team_score(runs + 1)
         self.bowling_team.current_bowler.increment_runs_given(runs + 1)
         self.bowling_team.increment_total_extras(runs + 1)
         self.set_ball_counted(False)
@@ -215,7 +232,7 @@ class Match:
 
     def handle_runs(self):
         runs = int(input("How many runs were made on this Ball: "))
-        self.batting_team.current_batters[0].balls_played += 1
+        self.batting_team.current_batters[0].increment_balls_played()
         # Update batter's stats (runs scored, balls faced)
         self.batting_team.current_batters[0].increment_runs(runs)
         # Update bowler's stats (runs conceded)
@@ -227,6 +244,7 @@ class Match:
         # Swap batters if needed
         if runs % 2 == 1:
             self.batting_team.current_batters.reverse()
+        return runs
 
     def handle_exit(self):
         self.current_innings += 1
@@ -313,19 +331,109 @@ class Match:
         match self.match_type:
             case "Super Over: 1 Over Match":  # 1 overs
                 self.total_overs = 1
-            case "FIVES: 5 Over Match":  # 5 overs
+            case "Fives: 5 Overs Match":  # 5 overs
                 self.total_overs = 5
-            case "T10: 10 Over Match":  # 10 overs
+            case "T10: 10 Overs Match":  # 10 overs
                 self.total_overs = 10
-            case "T20: 20 Over Match":  # 20 overs
+            case "T20: 20 Overs Match":  # 20 overs
                 self.total_overs = 20
-            case "ODI: 50 Over Match":  # 50 overs
+            case "ODI: 50 Overs Match":  # 50 overs
                 self.total_overs = 50
             case _:
                 raise ValueError("Invalid match type")
 
     def get_target(self):
         return self.target
+
+    def handle_run_out(self):
+        i = 1
+        for player in self.bowling_team.batters:
+            print(f" {i}: {player.get_full_name()}")
+            i += 1
+
+        run_out_by = int(input("The Player number from above who threw for Run out (1-11): "))
+
+        is_striker = input("Was Striker run out or Non-striker (s/n): ")
+
+        if is_striker == 's':
+            is_striker = True
+        elif is_striker == 'n':
+            is_striker = False
+        else:
+            pass
+            # Throw error
+
+        runs = self.handle_runs()
+
+        self.bowling_team.increment_wickets()
+        self.bowling_team.increment_run_outs()
+        if is_striker:
+            if runs % 2 == 0:
+                self.batting_team.current_batters[0].dismissal_type = "run out"
+                self.batting_team.current_batters[0].is_out = True
+                # -----------------Removing Out Player------------------------#
+
+                self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
+                # -----------------Checking if Innings ended------------------------#
+                if self.bowling_team.get_total_wickets() < 10:
+                    self.batting_team.current_batters.append(
+                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
+                    self.batting_team.current_batters.reverse()
+                else:
+                    print("All Out!!")
+                print(
+                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
+                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+
+            elif runs % 2 == 1:
+                self.batting_team.current_batters[1].dismissal_type = "run out"
+                self.batting_team.current_batters[1].is_out = True
+                # -----------------Removing Out Player------------------------#
+
+                self.batting_team.current_batters.remove(self.batting_team.current_batters[1])
+                # -----------------Checking if Innings ended------------------------#
+                if self.bowling_team.get_total_wickets() < 10:
+                    self.batting_team.current_batters.append(
+                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
+                else:
+                    print("All Out!!")
+                print(
+                    f"\n\n{self.batting_team.current_batters[1].get_full_name()} is Run Out "
+                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+
+        else:
+            if runs % 2 == 0:
+                self.batting_team.current_batters[1].dismissal_type = "run out"
+                self.batting_team.current_batters[1].is_out = True
+                # -----------------Removing Out Player------------------------#
+
+                self.batting_team.current_batters.remove(self.batting_team.current_batters[1])
+                # -----------------Checking if Innings ended------------------------#
+                if self.bowling_team.get_total_wickets() < 10:
+                    self.batting_team.current_batters.append(
+                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
+                else:
+                    print("All Out!!")
+
+                print(
+                    f"\n\n{self.batting_team.current_batters[1].get_full_name()} is Run Out "
+                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+            elif runs % 2 == 1:
+                self.batting_team.current_batters[0].dismissal_type = "run out"
+                self.batting_team.current_batters[0].is_out = True
+                # -----------------Removing Out Player------------------------#
+
+                self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
+                # -----------------Checking if Innings ended------------------------#
+                if self.bowling_team.get_total_wickets() < 10:
+                    self.batting_team.current_batters.append(
+                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
+                    self.batting_team.current_batters.reverse()
+                else:
+                    print("All Out!!")
+                print(
+                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
+                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
 
     def scoring(self, innings):
 
