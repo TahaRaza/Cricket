@@ -234,11 +234,10 @@ class Match:
         runs = int(input("How many runs were made on this Ball: "))
         self.batting_team.current_batters[0].increment_balls_played()
         # Update batter's stats (runs scored, balls faced)
-        self.batting_team.current_batters[0].increment_runs(runs)
         # Update bowler's stats (runs conceded)
         self.bowling_team.current_bowler.increment_runs_given(runs)
         self.bowling_team.current_bowler.increment_balls_bowled()
-        # Update team's total score
+        # Update team's total score Update batter's stats (runs scored, balls faced)
         self.batting_team.increment_runs(runs)
         self.bowling_team.increment_ball()
         # Swap batters if needed
@@ -312,7 +311,9 @@ class Match:
             f"Economy: {self.bowling_team.get_current_bowler().get_economy()}")
         print(
             f" Batter on Strike: {self.batting_team.current_batters[0].get_full_name()}\n "
-            f"Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}")
+            f"Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}\n"
+            f"Balls played by Batter: {self.batting_team.current_batters[0].balls_played}\n"
+            f"Score made by Batter: {self.batting_team.current_batters[0].runs}")
         print(
             f" Batters on Pitch: {self.batting_team.current_batters[0].get_full_name()} "
             f"and {self.batting_team.current_batters[1].get_full_name()}")

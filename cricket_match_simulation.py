@@ -70,5 +70,3 @@ if __name__ == "__main__":
     main()
 
 # TO-DO
-# run OUT and Stump Out is Missing
-# Ball counting for individual bowler in not accurate
