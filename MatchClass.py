@@ -12,6 +12,7 @@ def scoring_menu():
           "Press D for Dot Ball\n"
           "Press W for Wide Ball\n"
           "Press R for Runs Taken Between the Wicket\n"
+          "Press L for Leg Bye and Bye \n"
           "Press E to End match due to Rain\n")
     user_input = str.upper(input('What happened on this Ball: '))
     return user_input
@@ -155,12 +156,7 @@ class Match:
         self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
 
         # -----------------Checking if Innings ended------------------------#
-        if self.bowling_team.get_total_wickets() < 10:
-            self.batting_team.current_batters.append(
-                self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
-            self.batting_team.current_batters.reverse()
-        else:
-            print("All Out!!")
+        self.is_innings1_ended()
 
     def handle_boundary(self):
         while True:
@@ -187,7 +183,7 @@ class Match:
 
         # # Update team's total score
         self.bowling_team.increment_ball()
-        self.batting_team.increment_runs(runs)
+        self.batting_team.increment_runs(runs)  # will increase team runs and current batter runs
 
         print(f"{runs} runs scored!")
 
@@ -230,15 +226,14 @@ class Match:
         if runs % 2 == 1:
             self.batting_team.current_batters.reverse()
 
-    def handle_runs(self):
-        runs = int(input("How many runs were made on this Ball: "))
+    def handle_runs(self, runs):
         self.batting_team.current_batters[0].increment_balls_played()
         # Update batter's stats (runs scored, balls faced)
         # Update bowler's stats (runs conceded)
         self.bowling_team.current_bowler.increment_runs_given(runs)
         self.bowling_team.current_bowler.increment_balls_bowled()
         # Update team's total score Update batter's stats (runs scored, balls faced)
-        self.batting_team.increment_runs(runs)
+        self.batting_team.increment_runs(runs)  # will increase team runs and current batter runs
         self.bowling_team.increment_ball()
         # Swap batters if needed
         if runs % 2 == 1:
@@ -249,15 +244,22 @@ class Match:
         self.current_innings += 1
         print("Exiting...")
 
+    def handle_leg_bye(self):
+        bye_or_leg_bye = input("Was it bye or leg bye? (b/lb): ").lower()
+        runs = int(input(f"How many runs were made on {bye_or_leg_bye}: "))
+        self.batting_team.current_batters[0].runs -= runs
+        self.handle_runs(runs=runs)
+
     def second_innings(self):
         self.set_target()
         print(f"Targets:{self.target}")
         print(f"batting team:{self.batting_team.name}: ")
-        for batters in self.batting_team.batters:
-            print(f"{batters.get_full_name()}: {batters.runs}-{batters.balls_played} S/R: {batters.get_strike_rate()}")
+        for batter in self.batting_team.batters:
+            print(f"{batter.get_full_name()}: {batter.runs}-{batter.balls_played} S/R: {batter.get_strike_rate()}")
         print(f"Bowling team:{self.bowling_team.name}: ")
-        for bowlers in self.bowling_team.bowlers:
-            print(f"{bowlers.get_full_name()}: {bowlers.runs_given}-{bowlers.no_of_balls} eco: {bowlers.get_economy()}")
+        for bowler in self.bowling_team.bowlers:
+            print(f"{bowler.get_full_name()}: {bowler.runs_given}-{bowler.no_of_balls_bowled} "
+                  f"eco: {bowler.get_economy()}")
 
         print("\n_______________________________Starting Second Innings_______________________________\n")
         self.batting_team, self.bowling_team = self.bowling_team, self.batting_team
@@ -266,7 +268,7 @@ class Match:
 
         self.first_innings()
 
-    def is_innings_ended(self):
+    def is_innings2_ended(self):
 
         if self.current_innings == 2:
             if (self.batting_team.total_team_score == (self.target - 1) and
@@ -364,77 +366,42 @@ class Match:
             pass
             # Throw error
 
-        runs = self.handle_runs()
+        runs = self.handle_runs(runs=int(input("How many runs were made on this Ball: ")))
 
         self.bowling_team.increment_wickets()
         self.bowling_team.increment_run_outs()
-        if is_striker:
-            if runs % 2 == 0:
-                self.batting_team.current_batters[0].dismissal_type = "run out"
-                self.batting_team.current_batters[0].is_out = True
-                # -----------------Removing Out Player------------------------#
+        if is_striker and runs % 2 == 0 or not is_striker and runs % 2 == 1:
+            self.even_runs_run_out(run_out_by=run_out_by)
+        elif is_striker and runs % 2 == 1 or not is_striker and runs % 2 == 0:
+            self.odd_runs_run_out(run_out_by=run_out_by)
 
-                self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
-                # -----------------Checking if Innings ended------------------------#
-                if self.bowling_team.get_total_wickets() < 10:
-                    self.batting_team.current_batters.append(
-                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
-                    self.batting_team.current_batters.reverse()
-                else:
-                    print("All Out!!")
-                print(
-                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
-                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+    def even_runs_run_out(self, run_out_by):
+        self.batting_team.current_batters[0].dismissal_type = "run out"
+        self.batting_team.current_batters[0].is_out = True
+        # -----------------Removing Out Player------------------------#
+        self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
+        #
+        self.is_innings1_ended()
+        print(
+            f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
+            f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
 
-            elif runs % 2 == 1:
-                self.batting_team.current_batters[1].dismissal_type = "run out"
-                self.batting_team.current_batters[1].is_out = True
-                # -----------------Removing Out Player------------------------#
+    def odd_runs_run_out(self, run_out_by):
+        self.batting_team.current_batters[1].dismissal_type = "run out"
+        self.batting_team.current_batters[1].is_out = True
+        # -----------------Removing Out Player------------------------#
 
-                self.batting_team.current_batters.remove(self.batting_team.current_batters[1])
-                # -----------------Checking if Innings ended------------------------#
-                if self.bowling_team.get_total_wickets() < 10:
-                    self.batting_team.current_batters.append(
-                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
-                else:
-                    print("All Out!!")
-                print(
-                    f"\n\n{self.batting_team.current_batters[1].get_full_name()} is Run Out "
-                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
-
+        self.batting_team.current_batters.remove(self.batting_team.current_batters[1])
+        # -----------------Checking if Innings ended------------------------#
+        if self.bowling_team.get_total_wickets() < 10:
+            self.batting_team.current_batters.append(
+                self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
         else:
-            if runs % 2 == 0:
-                self.batting_team.current_batters[1].dismissal_type = "run out"
-                self.batting_team.current_batters[1].is_out = True
-                # -----------------Removing Out Player------------------------#
+            print("All Out!!")
 
-                self.batting_team.current_batters.remove(self.batting_team.current_batters[1])
-                # -----------------Checking if Innings ended------------------------#
-                if self.bowling_team.get_total_wickets() < 10:
-                    self.batting_team.current_batters.append(
-                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
-                else:
-                    print("All Out!!")
-
-                print(
-                    f"\n\n{self.batting_team.current_batters[1].get_full_name()} is Run Out "
-                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
-            elif runs % 2 == 1:
-                self.batting_team.current_batters[0].dismissal_type = "run out"
-                self.batting_team.current_batters[0].is_out = True
-                # -----------------Removing Out Player------------------------#
-
-                self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
-                # -----------------Checking if Innings ended------------------------#
-                if self.bowling_team.get_total_wickets() < 10:
-                    self.batting_team.current_batters.append(
-                        self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
-                    self.batting_team.current_batters.reverse()
-                else:
-                    print("All Out!!")
-                print(
-                    f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
-                    f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+        print(
+            f"\n\n{self.batting_team.current_batters[1].get_full_name()} is Run Out "
+            f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
 
     def scoring(self, innings):
 
@@ -452,7 +419,9 @@ class Match:
             elif input_ == "W":
                 self.handle_wide_ball()
             elif input_ == "R":
-                self.handle_runs()
+                self.handle_runs(int(input("How many runs were made on this Ball: ")))
+            elif input_ == "L":
+                self.handle_leg_bye()
             elif input_ == "E":
                 self.handle_exit()
 
@@ -465,6 +434,16 @@ class Match:
             self.display_scorecard()
 
             # Check if inning has end
-            is_ended = self.is_innings_ended()
+            is_ended = self.is_innings2_ended()
             if is_ended:
                 return
+
+    def is_innings1_ended(self):
+
+        # -----------------Checking if Innings ended------------------------#
+        if self.bowling_team.get_total_wickets() < 10:
+            self.batting_team.current_batters.append(
+                self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
+            self.batting_team.current_batters.reverse()
+        else:
+            print("All Out!!")
