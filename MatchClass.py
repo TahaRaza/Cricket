@@ -14,8 +14,7 @@ def scoring_menu():
           "Press R for Runs Taken Between the Wicket\n"
           "Press L for Leg Bye and Bye \n"
           "Press E to End match due to Rain\n")
-    user_input = str.upper(input('What happened on this Ball: '))
-    return user_input
+    return str.upper(input('What happened on this Ball: '))
 
 
 class Match:
@@ -48,7 +47,7 @@ class Match:
         self.set_total_overs()
         self.toss()  # simulates the toss and sets toss_winner and toss_winner_decision
         self.start_innings()
-        self.first_innings()
+        self.innings()
 
     def toss(self):
 
@@ -79,11 +78,12 @@ class Match:
 
         print(f"{self.batting_team.name} is batting. {self.bowling_team.name} is bowling.")
 
-    def first_innings(self):
-        self.scoring(self.current_innings)
+    def innings(self):
 
         # Handle switching innings or ending the match
-        if self.current_innings == 2:
+        if self.current_innings == 1:
+            self.scoring(1)
+        elif self.current_innings == 2:
             self.second_innings()  # Proceed to second innings
         elif self.current_innings == 3:
             return
@@ -266,7 +266,7 @@ class Match:
         print(f"batting team:{self.batting_team.name}")
         print(f"Bowling team:{self.bowling_team.name}")
 
-        self.first_innings()
+        self.innings()
 
     def is_innings2_ended(self):
 

@@ -70,4 +70,6 @@ if __name__ == "__main__":
     main()
 
 # TO-DO
+# scorecard error specifically in the count of balls thrown and played |Balls Increment|
+# errors at innings switching
 
