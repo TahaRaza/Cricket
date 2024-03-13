@@ -288,7 +288,7 @@ class Match:
         if self.batting_team.total_team_wickets == 10:
             print("All out!")
             self.current_innings += 1
-        elif self.bowling_team.get_int_over() == self.total_overs:
+        elif self.bowling_team.get_int_over() >= self.total_overs:
             print("Overs completed!")
             self.current_innings += 1
 
@@ -439,11 +439,16 @@ class Match:
                 return
 
     def is_innings1_ended(self):
+        # Check if all wickets are taken or overs are finished
+        if self.bowling_team.get_total_wickets() == 10 or self.bowling_team.get_int_over() >= self.total_overs:
+            print("First innings is over!")
+            # Prepare for the second innings
+            self.batting_team, self.bowling_team = self.bowling_team, self.batting_team
+            self.current_innings = 2  # Move to second innings
+            self.batting_team.current_batters = [self.batting_team.batters[0],
+                                                 self.batting_team.batters[1]]  # Reset batters
+            self.set_bowler()  # Set the new bowler for the second innings
+            self.display_scorecard()  # Display scorecard before starting second innings
+            return True  # Return True indicating first innings is over
+        return False  # Return False indicating first innings is not over yet
 
-        # -----------------Checking if Innings ended------------------------#
-        if self.bowling_team.get_total_wickets() < 10:
-            self.batting_team.current_batters.append(
-                self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
-            self.batting_team.current_batters.reverse()
-        else:
-            print("All Out!!")
