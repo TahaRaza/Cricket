@@ -274,23 +274,26 @@ class Match:
             if (self.batting_team.total_team_score == (self.target - 1) and
                     self.bowling_team.get_int_over() == self.total_overs):
                 print("Match Has Ended in a Draw!")
-                self.current_innings += 1
+                self.current_innings = 3
                 return True
             elif self.batting_team.total_team_score >= self.target:
                 print(f"match is over\n {self.batting_team.name} won!")
-                self.current_innings += 1
+                self.current_innings  = 3
                 return True
             elif self.bowling_team.get_int_over() == self.total_overs:
                 print(f"match is over\n {self.bowling_team.name} won!")
-                self.current_innings += 1
+                self.current_innings = 3
                 return True
 
         if self.batting_team.total_team_wickets == 10:
             print("All out!")
-            self.current_innings += 1
+            self.current_innings = 2
+            self.total_overs = 0
+
         elif self.bowling_team.get_int_over() >= self.total_overs:
             print("Overs completed!")
-            self.current_innings += 1
+            self.current_innings =2
+            self.total_overs = 0
 
         return False
 
@@ -448,7 +451,7 @@ class Match:
             self.batting_team.current_batters = [self.batting_team.batters[0],
                                                  self.batting_team.batters[1]]  # Reset batters
             self.set_bowler()  # Set the new bowler for the second innings
+            self.total_overs = 0
             self.display_scorecard()  # Display scorecard before starting second innings
             return True  # Return True indicating first innings is over
         return False  # Return False indicating first innings is not over yet
-
