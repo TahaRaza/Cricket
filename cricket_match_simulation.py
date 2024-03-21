@@ -9,9 +9,37 @@ def main():
 
     team_A, team_B = choose_team()
     match_type = choose_match_type()
+    stadium_name = choose_location()
 
-    match = Match(team1=team_A, team2=team_B, match_type=match_type)
+    match = Match(team1=team_A, team2=team_B, match_type=match_type, stadium=stadium_name)
     match.simulate_match()
+
+
+def choose_location():
+    try:
+        workbook = openpyxl.load_workbook('Locations.xlsx')
+    except FileNotFoundError:
+        print("Error: Locations.xlsx file not found.")
+        return
+
+    # Extracting sheet names from the workbook
+    sheet_names = workbook.sheetnames
+
+    # Display available sheets to choose from
+    display_choices(sheet_names, "Choose a sheet for locations")
+
+    # Prompt user to select a sheet
+    sheet_name = get_choice(sheet_names, "sheet")
+    worksheet = workbook[sheet_name]
+    stadiums = []
+    for row in worksheet.iter_rows(values_only=True, min_row=2):
+        for cell in row:
+            if cell:
+                stadiums.append(cell)
+    print(stadiums)
+    display_choices(choices=stadiums,choice_type='Choose a Stadium')
+    stadium_name = get_choice(choices=stadiums,choice_type='Stadium')
+    return stadium_name
 
 
 def choose_team():
@@ -63,13 +91,10 @@ def get_choice(choices, choice_type):
                 print("Invalid choice. Please enter a number between 1 and", len(choices))
         except ValueError:
             print("Invalid input. Please enter a number.")
-        return choices[choice]
 
 
 if __name__ == "__main__":
     main()
 
 # TO-DO
-# scorecard error specifically in the count of balls thrown and played |Balls Increment|
-# errors at innings switching
 # for Match > 5 over it bowler repeats

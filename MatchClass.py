@@ -28,10 +28,10 @@ class Match:
     def get_ball_counted(cls):
         return cls._ball_counted
 
-    def __init__(self, team1, team2, match_type):
+    def __init__(self, team1, team2, match_type, stadium):
         self.team1 = team1
         self.team2 = team2
-        self.venue = input("Enter the venue of the match: ")
+        self.stadium = stadium
         self.date = date.today().strftime("%Y-%m-%d")
         self.toss_winner = None
         self.toss_winner_decision = None
@@ -81,11 +81,14 @@ class Match:
     def innings(self):
 
         # Handle switching innings or ending the match
-        if self.current_innings == 1:
-            self.scoring(1)
-        elif self.current_innings == 2:
+
+        self.scoring(self.current_innings)
+        if self.current_innings == 2:
+            print('')
             self.second_innings()  # Proceed to second innings
         elif self.current_innings == 3:
+            print('')
+            self.show_complete_score()
             return
 
     def handle_out(self):
@@ -154,9 +157,10 @@ class Match:
         # -----------------Removing Out Player------------------------#
 
         self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
-
+        if self.bowling_team.get_total_wickets() < 10:
+            self.batting_team.current_batters.append(self.batting_team.batters[self.bowling_team.get_total_wickets()+1])
         # -----------------Checking if Innings ended------------------------#
-        self.is_innings1_ended()
+        self.is_innings_ended()
 
     def handle_boundary(self):
         while True:
@@ -241,8 +245,7 @@ class Match:
         return runs
 
     def handle_exit(self):
-        self.current_innings += 1
-        print("Exiting...")
+        return
 
     def handle_leg_bye(self):
         bye_or_leg_bye = input("Was it bye or leg bye? (b/lb): ").lower()
@@ -253,13 +256,7 @@ class Match:
     def second_innings(self):
         self.set_target()
         print(f"Targets:{self.target}")
-        print(f"batting team:{self.batting_team.name}: ")
-        for batter in self.batting_team.batters:
-            print(f"{batter.get_full_name()}: {batter.runs}-{batter.balls_played} S/R: {batter.get_strike_rate()}")
-        print(f"Bowling team:{self.bowling_team.name}: ")
-        for bowler in self.bowling_team.bowlers:
-            print(f"{bowler.get_full_name()}: {bowler.runs_given}-{bowler.no_of_balls_bowled} "
-                  f"eco: {bowler.get_economy()}")
+        self.show_complete_score()
 
         print("\n_______________________________Starting Second Innings_______________________________\n")
         self.batting_team, self.bowling_team = self.bowling_team, self.batting_team
@@ -268,7 +265,7 @@ class Match:
 
         self.innings()
 
-    def is_innings2_ended(self):
+    def is_innings_ended(self):
 
         if self.current_innings == 2:
             if (self.batting_team.total_team_score == (self.target - 1) and
@@ -278,7 +275,7 @@ class Match:
                 return True
             elif self.batting_team.total_team_score >= self.target:
                 print(f"match is over\n {self.batting_team.name} won!")
-                self.current_innings  = 3
+                self.current_innings = 3
                 return True
             elif self.bowling_team.get_int_over() == self.total_overs:
                 print(f"match is over\n {self.bowling_team.name} won!")
@@ -292,8 +289,7 @@ class Match:
 
         elif self.bowling_team.get_int_over() >= self.total_overs:
             print("Overs completed!")
-            self.current_innings =2
-            self.total_overs = 0
+            self.current_innings = 2
 
         return False
 
@@ -301,7 +297,7 @@ class Match:
         print("\n_____________________________Scorecard_____________________________")
         print(f" Team 1: {self.team1.name}")
         print(f" Team 2: {self.team2.name}")
-        print(f" Venue: {self.venue}")
+        print(f" Stadium: {self.stadium}")
         print(f" Date: {self.date}")
         print(f" Toss winner: {self.toss_winner.name}")
         print(f" Current Inning: {self.current_innings}")
@@ -384,7 +380,7 @@ class Match:
         # -----------------Removing Out Player------------------------#
         self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
         #
-        self.is_innings1_ended()
+        # self.is_innings1_ended()
         print(
             f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
             f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
@@ -437,21 +433,15 @@ class Match:
             self.display_scorecard()
 
             # Check if inning has end
-            is_ended = self.is_innings2_ended()
+            is_ended = self.is_innings_ended()
             if is_ended:
                 return
 
-    def is_innings1_ended(self):
-        # Check if all wickets are taken or overs are finished
-        if self.bowling_team.get_total_wickets() == 10 or self.bowling_team.get_int_over() >= self.total_overs:
-            print("First innings is over!")
-            # Prepare for the second innings
-            self.batting_team, self.bowling_team = self.bowling_team, self.batting_team
-            self.current_innings = 2  # Move to second innings
-            self.batting_team.current_batters = [self.batting_team.batters[0],
-                                                 self.batting_team.batters[1]]  # Reset batters
-            self.set_bowler()  # Set the new bowler for the second innings
-            self.total_overs = 0
-            self.display_scorecard()  # Display scorecard before starting second innings
-            return True  # Return True indicating first innings is over
-        return False  # Return False indicating first innings is not over yet
+    def show_complete_score(self):
+        print(f"batting team:{self.batting_team.name}: ")
+        for batter in self.batting_team.batters:
+            print(f"{batter.get_full_name()}: {batter.runs}-{batter.balls_played} S/R: {batter.get_strike_rate()}")
+        print(f"Bowling team:{self.bowling_team.name}: ")
+        for bowler in self.bowling_team.bowlers:
+            print(f"{bowler.get_full_name()}: {bowler.runs_given}-{bowler.no_of_balls_bowled} "
+                  f"eco: {bowler.get_economy()}")
