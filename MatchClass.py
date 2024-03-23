@@ -255,7 +255,7 @@ class Match:
 
     def second_innings(self):
         self.set_target()
-        print(f"Targets:{self.target}")
+        print(f"Target:{self.target}")
         self.show_complete_score()
 
         print("\n_______________________________Starting Second Innings_______________________________\n")
@@ -274,11 +274,14 @@ class Match:
                 self.current_innings = 3
                 return True
             elif self.batting_team.total_team_score >= self.target:
-                print(f"match is over\n {self.batting_team.name} won!")
+                print(f"\n\n--------------------Match is over--------------------\n\n"
+                      f"{self.batting_team.name} won by {10 - self.bowling_team.total_team_wickets()} wickets!")
                 self.current_innings = 3
                 return True
             elif self.bowling_team.get_int_over() == self.total_overs:
-                print(f"match is over\n {self.bowling_team.name} won!")
+                print(f"\n\n--------------------Match is over--------------------\n\n"
+                      f" {self.bowling_team.name} won by "
+                      f"{self.target - self.batting_team.total_team_score()} runs!")
                 self.current_innings = 3
                 return True
 
@@ -307,17 +310,16 @@ class Match:
         print(f" Total Wickets: {self.bowling_team.total_team_wickets}")
         print(f" Current Ball: {self.bowling_team.current_ball}")
         print(f" Current Over: {self.bowling_team.current_over}")
+        print(f" Current Baller: {self.bowling_team.get_current_bowler().get_full_name()}\n"
+              f" Economy: {self.bowling_team.get_current_bowler().get_economy()}")
         print(
-            f" Current Baller: {self.bowling_team.get_current_bowler().get_full_name()}\n "
-            f"Economy: {self.bowling_team.get_current_bowler().get_economy()}")
-        print(
-            f" Batter on Strike: {self.batting_team.current_batters[0].get_full_name()}\n "
-            f"Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}\n"
-            f"Balls played by Batter: {self.batting_team.current_batters[0].balls_played}\n"
-            f"Score made by Batter: {self.batting_team.current_batters[0].runs}")
+            f" Batter on Strike: {self.batting_team.current_batters[0].get_full_name()}\n"
+            f" Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}\n"
+            f" Balls played by Batter: {self.batting_team.current_batters[0].balls_played}\n"
+            f" Score made by Batter: {self.batting_team.current_batters[0].runs}\n")
         print(
             f" Batters on Pitch: {self.batting_team.current_batters[0].get_full_name()} "
-            f"and {self.batting_team.current_batters[1].get_full_name()}")
+            f"and {self.batting_team.current_batters[1].get_full_name()}\n\n")
 
     def check_set_batter(self):
         if self.bowling_team.current_ball % 6 == 0:

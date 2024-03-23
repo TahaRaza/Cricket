@@ -36,9 +36,8 @@ def choose_location():
         for cell in row:
             if cell:
                 stadiums.append(cell)
-    print(stadiums)
-    display_choices(choices=stadiums,choice_type='Choose a Stadium')
-    stadium_name = get_choice(choices=stadiums,choice_type='Stadium')
+    display_choices(choices=stadiums, choice_type='Choose a Stadium')
+    stadium_name = get_choice(choices=stadiums, choice_type='Stadium')
     return stadium_name
 
 
