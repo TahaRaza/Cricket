@@ -113,6 +113,7 @@ class Match:
         # -------------------------- Checking Caught and Printing-------------------------- #
         if out_type.lower() == 'caught':
             self.bowling_team.increment_ball()
+            self.bowling_team.current_bowler.increment_balls_bowled()
             i = 1
             for player in self.bowling_team.batters:
                 print(f" {i}: {player.get_full_name()}")
@@ -159,6 +160,7 @@ class Match:
         self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
         if self.bowling_team.get_total_wickets() < 10:
             self.batting_team.current_batters.append(self.batting_team.batters[self.bowling_team.get_total_wickets()+1])
+            self.batting_team.current_batters.reverse()
         # -----------------Checking if Innings ended------------------------#
         self.is_innings_ended()
 
@@ -187,7 +189,7 @@ class Match:
 
         # # Update team's total score
         self.bowling_team.increment_ball()
-        self.batting_team.increment_runs(runs)  # will increase team runs and current batter runs
+        self.batting_team.increment_runs_t(runs)  # will increase team runs
 
         print(f"{runs} runs scored!")
 
@@ -197,13 +199,13 @@ class Match:
         # Update batter's stats (runs scored, balls faced)
         if runs == 4:
             self.batting_team.current_batters[0].increment_fours()
-            self.batting_team.increment_runs(5)
+            self.batting_team.increment_runs_t(5)
         elif runs == 6:
             self.batting_team.current_batters[0].increment_sixes()
-            self.batting_team.increment_runs(7)
+            self.batting_team.increment_runs_t(7)
         else:
             self.batting_team.current_batters[0].increment_runs(runs)
-            self.batting_team.increment_runs(runs + 1)
+            self.batting_team.increment_runs_t(runs + 1)
         # Update bowler's stats (runs conceded, no balls bowled)
         self.bowling_team.current_bowler.increment_runs_given(runs + 1)
         # Update team's total score and extras
@@ -231,13 +233,14 @@ class Match:
             self.batting_team.current_batters.reverse()
 
     def handle_runs(self, runs):
-        self.batting_team.current_batters[0].increment_balls_played()
         # Update batter's stats (runs scored, balls faced)
+        self.batting_team.current_batters[0].increment_balls_played()
+        self.batting_team.current_batters[0].increment_runs(runs)
         # Update bowler's stats (runs conceded)
         self.bowling_team.current_bowler.increment_runs_given(runs)
         self.bowling_team.current_bowler.increment_balls_bowled()
         # Update team's total score Update batter's stats (runs scored, balls faced)
-        self.batting_team.increment_runs(runs)  # will increase team runs and current batter runs
+        self.batting_team.increment_runs_t(runs)  # will increase team runs and current batter runs
         self.bowling_team.increment_ball()
         # Swap batters if needed
         if runs % 2 == 1:
@@ -275,13 +278,13 @@ class Match:
                 return True
             elif self.batting_team.total_team_score >= self.target:
                 print(f"\n\n--------------------Match is over--------------------\n\n"
-                      f"{self.batting_team.name} won by {10 - self.bowling_team.total_team_wickets()} wickets!")
+                      f"{self.batting_team.name} won by {10 - self.bowling_team.total_team_wickets} wickets!")
                 self.current_innings = 3
                 return True
             elif self.bowling_team.get_int_over() == self.total_overs:
                 print(f"\n\n--------------------Match is over--------------------\n\n"
                       f" {self.bowling_team.name} won by "
-                      f"{self.target - self.batting_team.total_team_score()} runs!")
+                      f"{self.target - 1 - self.batting_team.total_team_score} runs!")
                 self.current_innings = 3
                 return True
 
@@ -323,10 +326,11 @@ class Match:
 
     def check_set_batter(self):
         if self.bowling_team.current_ball % 6 == 0:
-            self.batting_team.current_batters.reverse()
+            if self.bowling_team.current_over <= self.total_overs:
+                self.batting_team.current_batters.reverse()
 
     def set_bowler(self):
-        self.bowling_team.set_current_bowler()
+        self.bowling_team.set_current_bowler(total_overs=self.total_overs)
 
     def set_target(self):
         self.target = self.batting_team.total_team_score + 1
@@ -385,7 +389,7 @@ class Match:
         # self.is_innings1_ended()
         print(
             f"\n\n{self.batting_team.current_batters[0].get_full_name()} is Run Out "
-            f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+            f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}\n\n")
 
     def odd_runs_run_out(self, run_out_by):
         self.batting_team.current_batters[1].dismissal_type = "run out"
@@ -402,7 +406,7 @@ class Match:
 
         print(
             f"\n\n{self.batting_team.current_batters[1].get_full_name()} is Run Out "
-            f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}")
+            f"by {self.bowling_team.batters[run_out_by - 1].get_full_name()}\n\n")
 
     def scoring(self, innings):
 

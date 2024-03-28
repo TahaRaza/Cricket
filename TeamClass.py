@@ -68,8 +68,8 @@ class Team:
     def set_over(self):
         self.current_over = round(float(int(self.current_ball / 6) + (int(self.current_ball % 6)) * 0.1), 1)
 
-    def set_current_bowler(self):
-        if self.get_int_over() < 5:
+    def set_current_bowler(self, total_overs):
+        if self.get_int_over() < total_overs:
             self.current_bowler = self.bowlers[self.get_int_over()]
 
     # Increment Functions --------------------------------
@@ -79,14 +79,9 @@ class Team:
     def increment_wickets(self):
         self.total_team_wickets += 1
 
-    def increment_runs(self, runs_scored):
-        """Increments the team's total runs, the current batter's runs, and updates relevant statistics."""
+    def increment_runs_t(self, runs_scored):
+        """Increments the team's total runs"""
         self.total_team_score += runs_scored
-        self.current_batters[0].increment_runs(runs_scored)
-
-        # Update bowler's runs given and balls bowled
-        self.current_bowler.increment_runs_given(runs_scored)
-        self.current_bowler.increment_balls_bowled()
 
         # Increment ball and over count
         self.increment_ball()

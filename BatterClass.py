@@ -65,13 +65,11 @@ class Batter(Player):
 
     def increment_fours(self):
         """Increments the number of fours hit by the batter."""
-        self.balls_played += 1
         self.fours += 1
         self.increment_runs(4)
 
     def increment_sixes(self):
         """Increments the number of sixes hit by the batter."""
-        self.balls_played += 1
         self.sixes += 1
         self.increment_runs(6)
 
