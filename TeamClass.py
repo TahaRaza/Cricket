@@ -1,6 +1,7 @@
 from BowlerClass import Bowler
 from BatterClass import Batter
 from openpyxl import load_workbook
+import functions as f
 
 
 class Team:
@@ -19,6 +20,7 @@ class Team:
         self.total_team_wickets = 0  # Total team Wickets
         self.total_extras = 0  # Total extras
         self.run_outs = 0
+        self.current_runrate = 0
 
         # Add players during initialization
         self.add_players(self.name)
@@ -69,8 +71,15 @@ class Team:
         self.current_over = round(float(int(self.current_ball / 6) + (int(self.current_ball % 6)) * 0.1), 1)
 
     def set_current_bowler(self, total_overs):
-        if self.get_int_over() < total_overs:
-            self.current_bowler = self.bowlers[self.get_int_over()]
+        if total_overs > self.get_int_over() == self.current_over:
+            self.current_bowler = self.bowlers[f.display_choices(choices=self.bowlers, choice_type="Bowler",
+                                                                 is_bowler=True)]
+
+    def set_current_runrate(self):
+        if self.current_ball > 0:
+            self.current_runrate = (self.total_team_score * 6) / self.current_ball
+        else:
+            self.current_runrate = 0
 
     # Increment Functions --------------------------------
     def increment_total_extras(self, total_extras):
@@ -107,6 +116,11 @@ class Team:
     def get_int_over(self):
         return int(self.current_over)
 
-    def get_current_bowler(self):
-        self.set_current_bowler()
+    def get_current_bowler(self, total_overs):
+        # done_flag = 0
+        # self.set_current_bowler(total_overs=total_overs)
         return self.current_bowler
+
+    def get_current_runrate(self):
+        self.set_current_runrate()
+        return self.current_runrate

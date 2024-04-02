@@ -42,6 +42,44 @@ class Match:
         self.target = 0
         self.match_type = match_type
         self.total_overs = 0
+        self.required_runrate = 0
+
+    # Setter Functions --------------------------------
+    def set_required_runrate(self):
+        self.required_runrate = self.get_target()
+
+    def set_target(self):
+        self.target = self.batting_team.total_team_score + 1
+
+    def set_bowler(self):
+        self.bowling_team.set_current_bowler(total_overs=self.total_overs)
+
+    def set_total_overs(self):
+        match self.match_type:
+            case "Super Over: 1 Over Match":  # 1 overs
+                self.total_overs = 1
+            case "Fives: 5 Overs Match":  # 5 overs
+                self.total_overs = 5
+            case "T10: 10 Overs Match":  # 10 overs
+                self.total_overs = 10
+            case "T20: 20 Overs Match":  # 20 overs
+                self.total_overs = 20
+            case "ODI: 50 Overs Match":  # 50 overs
+                self.total_overs = 50
+            case _:
+                self.total_overs = 1    # Default Overs
+                raise ValueError("Invalid match type")
+
+    # Getter Functions --------------------------------
+
+    def get_required_runrate(self):
+        self.set_required_runrate()
+        return self.required_runrate
+
+    def get_target(self):
+        return self.target
+
+    # Other Methods --------------------------------
 
     def simulate_match(self):
         self.set_total_overs()
@@ -219,7 +257,7 @@ class Match:
 
     def handle_dot_ball(self):
         self.bowling_team.increment_ball()
-        self.bowling_team.get_current_bowler().increment_balls_bowled()
+        self.bowling_team.get_current_bowler(total_overs=self.total_overs).increment_balls_bowled()
         self.batting_team.current_batters[0].balls_played += 1
         print("It's a Dot Ball")
 
@@ -313,8 +351,8 @@ class Match:
         print(f" Total Wickets: {self.bowling_team.total_team_wickets}")
         print(f" Current Ball: {self.bowling_team.current_ball}")
         print(f" Current Over: {self.bowling_team.current_over}")
-        print(f" Current Baller: {self.bowling_team.get_current_bowler().get_full_name()}\n"
-              f" Economy: {self.bowling_team.get_current_bowler().get_economy()}")
+        print(f" Current Baller: {self.bowling_team.get_current_bowler(total_overs=self.total_overs).get_full_name()}\n"
+              f" Economy: {self.bowling_team.get_current_bowler(total_overs=self.total_overs).get_economy()}")
         print(
             f" Batter on Strike: {self.batting_team.current_batters[0].get_full_name()}\n"
             f" Strike Rate: {self.batting_team.current_batters[0].get_strike_rate()}\n"
@@ -324,34 +362,14 @@ class Match:
             f" Batters on Pitch: {self.batting_team.current_batters[0].get_full_name()} "
             f"and {self.batting_team.current_batters[1].get_full_name()}\n\n")
 
+        print(f"Runrate: {round(self.batting_team.get_current_runrate(),2)}")
+        if self.current_innings == 2:
+            print(f"Required Runrate: {round(self.target-self.batting_team.total_team_score/(self.total_overs*6 - self.bowling_team.current_ball),2)}")
+
     def check_set_batter(self):
         if self.bowling_team.current_ball % 6 == 0:
             if self.bowling_team.current_over <= self.total_overs:
                 self.batting_team.current_batters.reverse()
-
-    def set_bowler(self):
-        self.bowling_team.set_current_bowler(total_overs=self.total_overs)
-
-    def set_target(self):
-        self.target = self.batting_team.total_team_score + 1
-
-    def set_total_overs(self):
-        match self.match_type:
-            case "Super Over: 1 Over Match":  # 1 overs
-                self.total_overs = 1
-            case "Fives: 5 Overs Match":  # 5 overs
-                self.total_overs = 5
-            case "T10: 10 Overs Match":  # 10 overs
-                self.total_overs = 10
-            case "T20: 20 Overs Match":  # 20 overs
-                self.total_overs = 20
-            case "ODI: 50 Overs Match":  # 50 overs
-                self.total_overs = 50
-            case _:
-                raise ValueError("Invalid match type")
-
-    def get_target(self):
-        return self.target
 
     def handle_run_out(self):
         i = 1
@@ -449,5 +467,7 @@ class Match:
             print(f"{batter.get_full_name()}: {batter.runs}-{batter.balls_played} S/R: {batter.get_strike_rate()}")
         print(f"Bowling team:{self.bowling_team.name}: ")
         for bowler in self.bowling_team.bowlers:
-            print(f"{bowler.get_full_name()}: {bowler.runs_given}-{bowler.no_of_balls_bowled} "
+            print(f"{bowler.get_full_name()}: "
+                  f"{bowler.runs_given} - {bowler.wickets}"
+                  f" ({(int(bowler.no_of_balls_bowled/6))+round((bowler.no_of_balls_bowled%6)*0.1,1)}) "
                   f"eco: {bowler.get_economy()}")
