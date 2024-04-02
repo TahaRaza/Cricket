@@ -79,3 +79,14 @@ def get_choice(choices, choice_type, is_bowler):
                 print("Invalid choice. Please enter a number between 1 and", len(choices))
         except ValueError:
             print("Invalid input. Please enter a number.")
+
+
+# For Flask
+def get_team_options():
+    try:
+        workbook = openpyxl.load_workbook('Teams.xlsx')
+    except FileNotFoundError:
+        print("Error: Teams.xlsx file not found.")
+        return
+
+    return sorted([sheet.title for sheet in workbook.worksheets])

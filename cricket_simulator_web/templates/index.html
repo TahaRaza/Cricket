@@ -1,24 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Cricket Simulator Online</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Cricket Simulator</title>
 </head>
 <body>
-    <h1>Cricket Match Simulator</h1>
-    <div id="team-selection">
-        <h2>Select Teams</h2>
-        <form id="team-selection-form">
-            <label for="team-a">Team A:</label>
-            <select id="team-a" name="teamA" required></select>
-            <br>
-            <label for="team-b">Team B:</label>
-            <select id="team-b" name="teamB" required></select>
-            <br>
-            <button type="submit">Simulate Match</button>
-        </form>
-    </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <h1>Welcome to Cricket Simulator!</h1>
+    <button onclick="window.location.href='/choose_teams'">Play Game</button>
 </body>
 </html>

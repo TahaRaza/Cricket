@@ -43,6 +43,8 @@ class Match:
         self.match_type = match_type
         self.total_overs = 0
         self.required_runrate = 0
+        self.match_winner = None
+        self.scorecard = None
 
     # Setter Functions --------------------------------
     def set_required_runrate(self):
@@ -86,6 +88,7 @@ class Match:
         self.toss()  # simulates the toss and sets toss_winner and toss_winner_decision
         self.start_innings()
         self.innings()
+        return self.match_winner, self.scorecard
 
     def toss(self):
 
@@ -312,18 +315,29 @@ class Match:
             if (self.batting_team.total_team_score == (self.target - 1) and
                     self.bowling_team.get_int_over() == self.total_overs):
                 print("Match Has Ended in a Draw!")
+                self.match_winner = "Draw"
                 self.current_innings = 3
                 return True
             elif self.batting_team.total_team_score >= self.target:
                 print(f"\n\n--------------------Match is over--------------------\n\n"
                       f"{self.batting_team.name} won by {10 - self.bowling_team.total_team_wickets} wickets!")
+                self.match_winner = self.batting_team.name
+                self.scorecard = (f"Score: {self.batting_team.name}: \n"
+                                  f"{self.batting_team.total_team_score} - {self.bowling_team.total_team_wickets}\n"
+                                  f"\n{self.bowling_team.name}: \n"
+                                  f"{self.bowling_team.total_team_score} - {self.batting_team.total_team_wickets}\n")
                 self.current_innings = 3
                 return True
             elif self.bowling_team.get_int_over() == self.total_overs:
                 print(f"\n\n--------------------Match is over--------------------\n\n"
                       f" {self.bowling_team.name} won by "
                       f"{self.target - 1 - self.batting_team.total_team_score} runs!")
+                self.match_winner = self.batting_team.name
                 self.current_innings = 3
+                self.scorecard = (f"Score: {self.batting_team.name}: \n"
+                                  f"{self.batting_team.total_team_score} - {self.bowling_team.total_team_wickets}\n"
+                                  f"\n{self.bowling_team.name}: \n"
+                                  f"{self.bowling_team.total_team_score} - {self.batting_team.total_team_wickets}\n")
                 return True
 
         if self.batting_team.total_team_wickets == 10:
