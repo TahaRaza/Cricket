@@ -77,6 +77,7 @@ class Team:
 
     def set_current_runrate(self):
         if self.current_ball > 0:
+            # runs per over
             self.current_runrate = (self.total_team_score * 6) / self.current_ball
         else:
             self.current_runrate = 0

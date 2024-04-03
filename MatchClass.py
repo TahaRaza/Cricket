@@ -262,6 +262,7 @@ class Match:
         self.bowling_team.increment_ball()
         self.bowling_team.get_current_bowler(total_overs=self.total_overs).increment_balls_bowled()
         self.batting_team.current_batters[0].balls_played += 1
+        self.batting_team.current_ball += 1
         print("It's a Dot Ball")
 
     def handle_wide_ball(self):
@@ -303,6 +304,7 @@ class Match:
         self.show_complete_score()
 
         print("\n_______________________________Starting Second Innings_______________________________\n")
+        self.batting_team.current_ball, self.bowling_team.current_ball = 0, 0
         self.batting_team, self.bowling_team = self.bowling_team, self.batting_team
         print(f"batting team:{self.batting_team.name}")
         print(f"Bowling team:{self.bowling_team.name}")
@@ -343,7 +345,6 @@ class Match:
         if self.batting_team.total_team_wickets == 10:
             print("All out!")
             self.current_innings = 2
-            self.total_overs = 0
 
         elif self.bowling_team.get_int_over() >= self.total_overs:
             print("Overs completed!")
@@ -485,3 +486,10 @@ class Match:
                   f"{bowler.runs_given} - {bowler.wickets}"
                   f" ({(int(bowler.no_of_balls_bowled/6))+round((bowler.no_of_balls_bowled%6)*0.1,1)}) "
                   f"eco: {bowler.get_economy()}")
+
+        if self.current_innings == 2:
+            print(f"\n-------------------------------------------------------\n"
+                  f"Target : {self.target}\n"
+                  f"Required Runrate {self.batting_team.get_current_runrate()}")
+        if self.current_innings == 3:
+            print(f"Great Match by {self.match_winner}")
