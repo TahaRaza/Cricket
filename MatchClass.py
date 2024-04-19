@@ -69,7 +69,7 @@ class Match:
             case "ODI: 50 Overs Match":  # 50 overs
                 self.total_overs = 50
             case _:
-                self.total_overs = 1    # Default Overs
+                self.total_overs = 1  # Default Overs
                 raise ValueError("Invalid match type")
 
     # Getter Functions --------------------------------
@@ -200,7 +200,8 @@ class Match:
 
         self.batting_team.current_batters.remove(self.batting_team.current_batters[0])
         if self.bowling_team.get_total_wickets() < 10:
-            self.batting_team.current_batters.append(self.batting_team.batters[self.bowling_team.get_total_wickets()+1])
+            self.batting_team.current_batters.append(
+                self.batting_team.batters[self.bowling_team.get_total_wickets() + 1])
             self.batting_team.current_batters.reverse()
         # -----------------Checking if Innings ended------------------------#
         self.is_innings_ended()
@@ -377,9 +378,10 @@ class Match:
             f" Batters on Pitch: {self.batting_team.current_batters[0].get_full_name()} "
             f"and {self.batting_team.current_batters[1].get_full_name()}\n\n")
 
-        print(f"Runrate: {round(self.batting_team.get_current_runrate(),2)}")
+        print(f"Runrate: {round(self.batting_team.get_current_runrate(), 2)}")
         if self.current_innings == 2:
-            print(f"Required Runrate: {round(self.target-self.batting_team.total_team_score/(self.total_overs*6 - self.bowling_team.current_ball),2)}")
+            print(
+                f"Required Runrate: {round(self.target - self.batting_team.total_team_score / (self.total_overs * 6 - self.bowling_team.current_ball), 2)}")
 
     def check_set_batter(self):
         if self.bowling_team.current_ball % 6 == 0:
@@ -484,7 +486,7 @@ class Match:
         for bowler in self.bowling_team.bowlers:
             print(f"{bowler.get_full_name()}: "
                   f"{bowler.runs_given} - {bowler.wickets}"
-                  f" ({(int(bowler.no_of_balls_bowled/6))+round((bowler.no_of_balls_bowled%6)*0.1,1)}) "
+                  f" ({(int(bowler.no_of_balls_bowled / 6)) + round((bowler.no_of_balls_bowled % 6) * 0.1, 1)}) "
                   f"eco: {bowler.get_economy()}")
 
         if self.current_innings == 2:
