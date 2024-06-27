@@ -1,3 +1,5 @@
+import pickle
+import pandas as pd
 import random
 from datetime import date
 
@@ -382,6 +384,24 @@ class Match:
         if self.current_innings == 2:
             print(
                 f"Required Runrate: {round(self.target - self.batting_team.total_team_score / (self.total_overs * 6 - self.bowling_team.current_ball), 2)}")
+
+        if self.bowling_team.get_int_over != 0 and self.bowling_team.current_ball % 6 == 0:
+            with open('RanForReg_model.pkl', 'rb') as f:
+                model = pickle.load(f)
+
+            new_data = pd.DataFrame({'venue': [self.stadium], 'bat_team': [self.batting_team.name],
+                                     'bowl_team': [self.bowling_team.name],
+                                     'batsman': [self.batting_team.current_batters[0]],
+                                     'bowler': [self.bowling_team.current_bowler],
+                                     'runs': [self.batting_team.total_team_score],
+                                     'wickets': [self.bowling_team.get_total_wickets()],
+                                     'overs': [self.bowling_team.get_int_over],
+                                     'striker': [self.batting_team.current_batters[0].get_runs()],
+                                     'non-striker': [self.batting_team.current_batters[0].get_runs()]})
+            # Make predictions
+            prediction = model.predict(new_data)
+
+            print("Predicted score:", int(prediction[0] + self.batting_team.total_team_score))
 
     def check_set_batter(self):
         if self.bowling_team.current_ball % 6 == 0:
